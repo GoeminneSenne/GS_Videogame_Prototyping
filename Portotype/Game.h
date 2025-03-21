@@ -1,5 +1,7 @@
 #pragma once
 #include "BaseGame.h"
+class Player;
+
 class Game : public BaseGame
 {
 public:
@@ -27,4 +29,7 @@ private:
 	void Initialize();
 	void Cleanup( );
 	void ClearBackground( ) const;
+
+	//MEMBERS
+	Player* m_pPlayer;
 };
