@@ -5,6 +5,7 @@
 Game::Game( const Window& window ) 
 	: BaseGame{ window }
 	, m_pPlayer{new Player(200.f, 200.f)}
+	, m_Switch{400.f, 100.f, 50.f, 50.f}
 {
 	Initialize();
 }
@@ -28,11 +29,13 @@ void Game::Cleanup( )
 void Game::Update( float elapsedSec )
 {
 	m_pPlayer->Move(elapsedSec);
+	m_Switch.CheckCollision(*m_pPlayer);
 }
 
 void Game::Draw( ) const
 {
 	ClearBackground( );
+	m_Switch.Draw();
 	m_pPlayer->Draw();
 }
 

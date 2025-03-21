@@ -20,19 +20,19 @@ void Player::Move(float elapsedSec)
 	Vector2f direction{0.f, 0.f};
 
 	const Uint8 *pStates = SDL_GetKeyboardState( nullptr );
-	if ( pStates[SDL_SCANCODE_RIGHT] )
+	if ( pStates[SDL_SCANCODE_RIGHT] or pStates[SDL_SCANCODE_D])
 	{
 		++direction.x;
 	}
-	if ( pStates[SDL_SCANCODE_LEFT])
+	if ( pStates[SDL_SCANCODE_LEFT] or pStates[SDL_SCANCODE_A])
 	{
 		--direction.x;
 	}
-	if (pStates[SDL_SCANCODE_UP])
+	if (pStates[SDL_SCANCODE_UP] or pStates[SDL_SCANCODE_W])
 	{
 		++direction.y;
 	}
-	if (pStates[SDL_SCANCODE_DOWN])
+	if (pStates[SDL_SCANCODE_DOWN] or pStates[SDL_SCANCODE_S])
 	{
 		--direction.y;
 	}
@@ -40,4 +40,9 @@ void Player::Move(float elapsedSec)
 
 	m_Bounds.left += direction.x * MOVE_SPEED * elapsedSec;
 	m_Bounds.bottom += direction.y * MOVE_SPEED * elapsedSec;
+}
+
+Rectf Player::GetBounds() const
+{
+	return m_Bounds;
 }

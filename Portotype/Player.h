@@ -7,6 +7,7 @@ public:
 	void Draw() const;
 	void Move(float elapsedSec);
 
+	Rectf GetBounds() const;
 private:
 	Rectf m_Bounds;
 };

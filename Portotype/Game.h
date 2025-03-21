@@ -33,4 +33,5 @@ private:
 
 	//MEMBERS
 	Player* m_pPlayer;
+	PressureSwitch m_Switch;
 };
