@@ -75,6 +75,7 @@ namespace utils
 	bool IsOverlapping( const Vector2f* vertices, size_t nrVertices, const Circlef& c );
 	bool Raycast( const Vector2f* vertices, const size_t nrVertices, const Vector2f& rayP1, const Vector2f& rayP2, HitInfo& hitInfo );
 	bool Raycast( const std::vector<Vector2f>& vertices, const Vector2f& rayP1, const Vector2f& rayP2, HitInfo& hitInfo );
+	bool Raycast(const Rectf& rect, const Vector2f& rayP1, const Vector2f& rayP2, HitInfo& hitInfo);
 
 	bool IntersectLineSegments(const Vector2f& p1, const Vector2f& p2, const Vector2f& q1, const Vector2f& q2, float& outLambda1, float& outLambda2, float epsilon = 1e-6);
 	float DistPointLineSegment(const Vector2f& p, const Vector2f& a, const Vector2f& b);

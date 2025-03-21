@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseGame.h"
+#include "PressureSwitch.h"
 class Player;
 
 class Game : public BaseGame
