@@ -1,11 +1,12 @@
 #include "pch.h"
 #include "Game.h"
 #include "Player.h"
+#include "utils.h"
 
 Game::Game( const Window& window ) 
 	: BaseGame{ window }
 	, m_pPlayer{new Player(200.f, 200.f)}
-	, m_Switch{400.f, 100.f, 50.f, 50.f}
+	, m_Switch{400.f, 120.f, 50.f, 50.f}
 {
 	Initialize();
 }
@@ -17,7 +18,7 @@ Game::~Game( )
 
 void Game::Initialize( )
 {
-	
+	m_WorldVertices.push_back(std::vector<Vector2f>{Vector2f(100.f, 100.f), Vector2f(600.f, 100.f), Vector2f(600.f, 400.f), Vector2f(100.f, 400.f)});
 }
 
 void Game::Cleanup( )
@@ -28,7 +29,7 @@ void Game::Cleanup( )
 
 void Game::Update( float elapsedSec )
 {
-	m_pPlayer->Move(elapsedSec);
+	m_pPlayer->Update(elapsedSec, m_WorldVertices);
 	m_Switch.CheckCollision(*m_pPlayer);
 }
 
@@ -37,6 +38,7 @@ void Game::Draw( ) const
 	ClearBackground( );
 	m_Switch.Draw();
 	m_pPlayer->Draw();
+	DrawWorldVertices();
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
@@ -106,4 +108,14 @@ void Game::ClearBackground( ) const
 {
 	glClearColor( 0.0f, 0.0f, 0.3f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
+}
+
+void Game::DrawWorldVertices() const
+{
+	utils::SetColor(Color4f(1.f, 0.f, 0.f, 1.f));
+
+	for (int idx{ 0 }; idx < m_WorldVertices.size(); ++idx)
+	{
+		utils::DrawPolygon(m_WorldVertices[idx], true);
+	}
 }

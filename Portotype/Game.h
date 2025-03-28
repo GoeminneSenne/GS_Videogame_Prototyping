@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseGame.h"
 #include "PressureSwitch.h"
+#include <vector>
 class Player;
 
 class Game : public BaseGame
@@ -31,7 +32,10 @@ private:
 	void Cleanup( );
 	void ClearBackground( ) const;
 
+	void DrawWorldVertices() const;
+
 	//MEMBERS
 	Player* m_pPlayer;
 	PressureSwitch m_Switch;
+	std::vector<std::vector<Vector2f>> m_WorldVertices;
 };
