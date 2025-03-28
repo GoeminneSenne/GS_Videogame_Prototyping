@@ -7,8 +7,10 @@ Game::Game( const Window& window )
 	: BaseGame{ window }
 	, m_pPlayer{new Player(200.f, 200.f)}
 	, m_Switch{400.f, 120.f, 50.f, 50.f}
-	, m_Door{&m_Switch, false, Vector2f(500.f, 100.f), Vector2f(500.f, 400.f)}
-	, m_HoldingDoor{&m_Switch, true, Vector2f(550.f, 100.f), Vector2f(550.f, 400.f)}
+	, m_HoldingDoorSwitch{300.f, 370.f, 30.f, 30.f}
+	, m_Door{&m_Switch, false, Vector2f(500.f, 100.f), Vector2f(500.f, 350.f)}
+	, m_UpperDoor{&m_Switch, true, Vector2f(200.f, 350.f), Vector2f(200.f, 450.f)}
+	, m_HoldingDoor{&m_HoldingDoorSwitch, true, Vector2f(550.f, 100.f), Vector2f(550.f, 350.f)}
 {
 	Initialize();
 }
@@ -20,7 +22,8 @@ Game::~Game( )
 
 void Game::Initialize( )
 {
-	m_WorldVertices.push_back(std::vector<Vector2f>{Vector2f(100.f, 100.f), Vector2f(600.f, 100.f), Vector2f(600.f, 400.f), Vector2f(100.f, 400.f)});
+	m_WorldVertices.push_back(std::vector<Vector2f>{Vector2f(100.f, 100.f), Vector2f(600.f, 100.f), Vector2f(600.f, 350.f), Vector2f(100.f, 350.f)});
+	m_WorldVertices.push_back(std::vector<Vector2f>{Vector2f(100.f, 350.f), Vector2f(600.f, 350.f), Vector2f(600.f, 450.f), Vector2f(100.f, 450.f)});
 }
 
 void Game::Cleanup( )
@@ -33,7 +36,9 @@ void Game::Update( float elapsedSec )
 {
 
 	m_Switch.CheckCollision(*m_pPlayer);
+	m_HoldingDoorSwitch.CheckCollision(*m_pPlayer);
 	m_Door.Update();
+	m_UpperDoor.Update();
 	m_HoldingDoor.Update();
 
 	std::vector<std::vector<Vector2f>> worldVertices{ m_WorldVertices };
@@ -45,6 +50,10 @@ void Game::Update( float elapsedSec )
 	{
 		worldVertices.push_back(m_HoldingDoor.GetVertices());
 	}
+	if (!m_UpperDoor.isOpened())
+	{
+		worldVertices.push_back(m_UpperDoor.GetVertices());
+	}
 
 	m_pPlayer->Update(elapsedSec, worldVertices);
 
@@ -55,7 +64,9 @@ void Game::Draw( ) const
 {
 	ClearBackground( );
 	m_Switch.Draw();
+	m_HoldingDoorSwitch.Draw();
 	m_Door.Draw();
+	m_UpperDoor.Draw();
 	m_HoldingDoor.Draw();
 	m_pPlayer->Draw();
 	DrawWorldVertices();

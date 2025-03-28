@@ -38,7 +38,9 @@ private:
 	//MEMBERS
 	Player* m_pPlayer;
 	PressureSwitch m_Switch;
+	PressureSwitch m_HoldingDoorSwitch;
 	Door m_Door;
+	Door m_UpperDoor;
 	Door m_HoldingDoor;
 	std::vector<std::vector<Vector2f>> m_WorldVertices;
 };
