@@ -7,6 +7,8 @@ Game::Game( const Window& window )
 	: BaseGame{ window }
 	, m_pPlayer{new Player(200.f, 200.f)}
 	, m_Switch{400.f, 120.f, 50.f, 50.f}
+	, m_Door{&m_Switch, false, Vector2f(500.f, 100.f), Vector2f(500.f, 400.f)}
+	, m_HoldingDoor{&m_Switch, true, Vector2f(550.f, 100.f), Vector2f(550.f, 400.f)}
 {
 	Initialize();
 }
@@ -29,14 +31,32 @@ void Game::Cleanup( )
 
 void Game::Update( float elapsedSec )
 {
-	m_pPlayer->Update(elapsedSec, m_WorldVertices);
+
 	m_Switch.CheckCollision(*m_pPlayer);
+	m_Door.Update();
+	m_HoldingDoor.Update();
+
+	std::vector<std::vector<Vector2f>> worldVertices{ m_WorldVertices };
+	if (!m_Door.isOpened())
+	{
+		worldVertices.push_back(m_Door.GetVertices());
+	}
+	if (!m_HoldingDoor.isOpened())
+	{
+		worldVertices.push_back(m_HoldingDoor.GetVertices());
+	}
+
+	m_pPlayer->Update(elapsedSec, worldVertices);
+
+	
 }
 
 void Game::Draw( ) const
 {
 	ClearBackground( );
 	m_Switch.Draw();
+	m_Door.Draw();
+	m_HoldingDoor.Draw();
 	m_pPlayer->Draw();
 	DrawWorldVertices();
 }

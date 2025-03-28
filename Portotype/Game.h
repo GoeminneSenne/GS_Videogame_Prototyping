@@ -2,6 +2,7 @@
 #include "BaseGame.h"
 #include "PressureSwitch.h"
 #include <vector>
+#include "Door.h"
 class Player;
 
 class Game : public BaseGame
@@ -37,5 +38,7 @@ private:
 	//MEMBERS
 	Player* m_pPlayer;
 	PressureSwitch m_Switch;
+	Door m_Door;
+	Door m_HoldingDoor;
 	std::vector<std::vector<Vector2f>> m_WorldVertices;
 };
