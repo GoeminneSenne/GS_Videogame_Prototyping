@@ -36,7 +36,7 @@ private:
 	void DrawWorldVertices() const;
 
 	//MEMBERS
-	Player* m_pPlayer;
+	Player* m_pPlayer1, *m_pPlayer2;
 	PressureSwitch m_Switch;
 	PressureSwitch m_HoldingDoorSwitch;
 	Door m_Door;

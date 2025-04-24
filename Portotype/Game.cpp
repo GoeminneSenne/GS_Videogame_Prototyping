@@ -5,7 +5,8 @@
 
 Game::Game( const Window& window ) 
 	: BaseGame{ window }
-	, m_pPlayer{new Player(200.f, 200.f)}
+	, m_pPlayer1{new Player(200.f, 200.f, true)}
+	, m_pPlayer2{new Player(120.f, 400.f, false)}
 	, m_Switch{400.f, 120.f, 50.f, 50.f}
 	, m_HoldingDoorSwitch{300.f, 370.f, 30.f, 30.f}
 	, m_Door{&m_Switch, false, Vector2f(500.f, 100.f), Vector2f(500.f, 350.f)}
@@ -28,15 +29,17 @@ void Game::Initialize( )
 
 void Game::Cleanup( )
 {
-	delete m_pPlayer;
-	m_pPlayer = nullptr;
+	delete m_pPlayer1;
+	m_pPlayer1 = nullptr;
 }
 
 void Game::Update( float elapsedSec )
 {
 
-	m_Switch.CheckCollision(*m_pPlayer);
-	m_HoldingDoorSwitch.CheckCollision(*m_pPlayer);
+	m_Switch.CheckCollision(*m_pPlayer1);
+	m_Switch.CheckCollision(*m_pPlayer2);
+	m_HoldingDoorSwitch.CheckCollision(*m_pPlayer1);
+	m_HoldingDoorSwitch.CheckCollision(*m_pPlayer2);
 	m_Door.Update();
 	m_UpperDoor.Update();
 	m_HoldingDoor.Update();
@@ -55,8 +58,8 @@ void Game::Update( float elapsedSec )
 		worldVertices.push_back(m_UpperDoor.GetVertices());
 	}
 
-	m_pPlayer->Update(elapsedSec, worldVertices);
-
+	m_pPlayer1->Update(elapsedSec, worldVertices);
+	m_pPlayer2->Update(elapsedSec, worldVertices);
 	
 }
 
@@ -68,13 +71,23 @@ void Game::Draw( ) const
 	m_Door.Draw();
 	m_UpperDoor.Draw();
 	m_HoldingDoor.Draw();
-	m_pPlayer->Draw();
+	m_pPlayer1->Draw();
+	m_pPlayer2->Draw();
 	DrawWorldVertices();
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
 	//std::cout << "KEYDOWN event: " << e.keysym.sym << std::endl;
+	switch (e.keysym.sym)
+	{
+	case SDLK_f:
+		bool isP1Active{ m_pPlayer1->IsSelected() };
+		m_pPlayer2->SetIsSelected(isP1Active);
+		m_pPlayer1->SetIsSelected(not isP1Active); //Swap boolean of player 1 and 2
+
+		break;
+	}
 }
 
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )

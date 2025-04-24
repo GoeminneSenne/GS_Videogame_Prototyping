@@ -4,7 +4,13 @@
 #include <iostream>
 
 Player::Player(float x, float y)
-	: m_Bounds{x, y, 20.f, 20.f}
+	: Player{ x, y, true }
+{
+}
+
+Player::Player(float x, float y, bool isSelected)
+	: m_Bounds{x,y,20.f,20.f}
+	, m_IsSelected{isSelected}
 {
 }
 
@@ -12,10 +18,18 @@ void Player::Draw() const
 {
 	utils::SetColor(Color4f(0.6f , 0.6f, 1.f, 1.f));
 	utils::FillRect(m_Bounds);
+
+	if (m_IsSelected)
+	{
+		utils::SetColor(Color4f{ 1.f, 0.7f, 0.f, 1.f });
+		utils::DrawRect(m_Bounds, 3.f);
+	}
 }
 
 void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& worldVertexTable)
 {
+	if (not m_IsSelected) return;
+
 	const float MOVE_SPEED{ 200.f };
 	Vector2f direction{0.f, 0.f};
 
@@ -92,4 +106,14 @@ void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<V
 Rectf Player::GetBounds() const
 {
 	return m_Bounds;
+}
+
+bool Player::IsSelected() const
+{
+	return m_IsSelected;
+}
+
+void Player::SetIsSelected(bool isSelected)
+{
+	m_IsSelected = isSelected;
 }
