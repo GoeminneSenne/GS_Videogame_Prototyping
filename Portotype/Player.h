@@ -13,6 +13,8 @@ public:
 
 	Rectf GetBounds() const;
 	bool IsSelected() const;
+
+	void SetPosition(float x, float y);
 	void SetIsSelected(bool isSelected);
 private:
 	Rectf m_Bounds;

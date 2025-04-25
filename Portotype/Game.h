@@ -4,6 +4,7 @@
 #include <vector>
 #include "Door.h"
 class Player;
+class Level;
 
 class Game : public BaseGame
 {
@@ -33,14 +34,10 @@ private:
 	void Cleanup( );
 	void ClearBackground( ) const;
 
-	void DrawWorldVertices() const;
+	void ResetLevel();
 
 	//MEMBERS
 	Player* m_pPlayer1, *m_pPlayer2;
-	PressureSwitch m_Switch;
-	PressureSwitch m_HoldingDoorSwitch;
-	Door m_Door;
-	Door m_UpperDoor;
-	Door m_HoldingDoor;
-	std::vector<std::vector<Vector2f>> m_WorldVertices;
+	Level* m_pLevel;
+	float m_LoadingAccuSec;
 };

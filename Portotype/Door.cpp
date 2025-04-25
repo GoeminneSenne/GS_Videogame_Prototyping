@@ -50,3 +50,8 @@ std::vector<Vector2f> Door::GetVertices() const
 {
 	return m_Vertices;
 }
+
+void Door::setIsOpened(bool isOpened)
+{
+	m_IsOpened = isOpened;
+}

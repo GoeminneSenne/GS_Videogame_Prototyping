@@ -12,6 +12,7 @@ public:
 	bool isOpened() const;
 	std::vector<Vector2f> GetVertices() const;
 
+	void setIsOpened(bool isOpened);
 private:
 	PressureSwitch* m_pLinkedSwitch;
 	bool m_IsOpened;

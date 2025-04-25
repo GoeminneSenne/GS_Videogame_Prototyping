@@ -22,9 +22,9 @@ void PressureSwitch::Draw() const
     utils::FillRect(m_Bounds);
 }
 
-void PressureSwitch::CheckCollision(const Player& player)
+void PressureSwitch::CheckCollision(const Player& player1, const Player& player2)
 {
-    if (utils::IsOverlapping(m_Bounds, player.GetBounds()))
+    if (utils::IsOverlapping(m_Bounds, player1.GetBounds()) || utils::IsOverlapping(m_Bounds, player2.GetBounds()))
     {
         m_IsActivated = true;
     }

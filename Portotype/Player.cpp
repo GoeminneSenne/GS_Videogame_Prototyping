@@ -113,6 +113,12 @@ bool Player::IsSelected() const
 	return m_IsSelected;
 }
 
+void Player::SetPosition(float x, float y)
+{
+	m_Bounds.left = x;
+	m_Bounds.bottom = y;
+}
+
 void Player::SetIsSelected(bool isSelected)
 {
 	m_IsSelected = isSelected;
