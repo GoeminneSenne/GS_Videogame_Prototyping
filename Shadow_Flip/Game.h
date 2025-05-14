@@ -36,6 +36,10 @@ private:
 	//MEMBERS
 	Player m_Player;
 	Camera m_Camera;
-	std::vector<std::vector<Vector2f>> m_Vertices;
+	std::vector<std::vector<Vector2f>> m_SharedVertices;
+	std::vector<std::vector<Vector2f>> m_LightVertices;
+	std::vector<std::vector<Vector2f>> m_DarkVertices;
 	Rectf m_LevelBounds;
+
+	bool m_IsInLightWorld;
 };

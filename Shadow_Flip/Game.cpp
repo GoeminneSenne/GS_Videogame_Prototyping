@@ -7,6 +7,7 @@ Game::Game( const Window& window )
 	:BaseGame{ window }
 	, m_Player{100.f, 100.f, 30.f, 30.f}
 	, m_Camera{GetViewPort().width, GetViewPort().height}
+	, m_IsInLightWorld{true}
 {
 	Initialize();
 }
@@ -41,15 +42,23 @@ void Game::Initialize( )
 		Vector2f{ 0 , 0 },
 		Vector2f{ 0 , 94 }
 	};
-	std::vector<Vector2f> m_Platform{
+	std::vector<Vector2f> m_LightPlatform{
 		Vector2f{150, 200},
 		Vector2f{150, 250},
 		Vector2f{250, 250},
 		Vector2f{250, 200},
 		Vector2f{150, 200}
 	};
-	m_Vertices.push_back(m_Ground);
-	m_Vertices.push_back(m_Platform);
+	std::vector<Vector2f> m_DarkPlatform {
+		Vector2f{620.f, 118.f},
+		Vector2f{700.f, 118.f},
+		Vector2f{700.f, 80.f},
+		Vector2f{620.f, 80.f},
+		Vector2f{620.f, 118.f}
+	};
+	m_SharedVertices.push_back(m_Ground);
+	m_LightVertices.push_back(m_LightPlatform);
+	m_DarkVertices.push_back(m_DarkPlatform);
 
 	CalculateLevelBounds();
 }
@@ -60,21 +69,59 @@ void Game::Cleanup( )
 
 void Game::Update( float elapsedSec )
 {
-	m_Player.Update(elapsedSec, m_Vertices);
+	std::vector<std::vector<Vector2f>> activeVertices{m_SharedVertices};
+	if (m_IsInLightWorld)
+	{
+		activeVertices.reserve(activeVertices.size() + m_LightVertices.size());
+		activeVertices.insert(activeVertices.end(), m_LightVertices.begin(), m_LightVertices.end());
+	}
+	else
+	{
+		activeVertices.reserve(activeVertices.size() + m_DarkVertices.size());
+		activeVertices.insert(activeVertices.end(), m_DarkVertices.begin(), m_DarkVertices.end());
+	}
+
+	m_Player.Update(elapsedSec, activeVertices);
 }
 
 void Game::Draw( ) const
 {
-	ClearBackground( );
+	ClearBackground();
+
+	if (m_IsInLightWorld)
+	{
+		utils::SetColor(Color4f(0.9f, 1.f, 0.6f, 1.f));
+	}
+	else
+	{
+		utils::SetColor(Color4f(0.33f, 0.f, 0.66f, 1.f));
+	}
+
 
 	m_Camera.Aim(m_LevelBounds.width, m_LevelBounds.height, m_Player.GetPosition());
-
 	m_Player.Draw();
 
-	for (int platformIdx{ 0 }; platformIdx < m_Vertices.size(); ++platformIdx)
+	for (int platformIdx{ 0 }; platformIdx < m_SharedVertices.size(); ++platformIdx)
 	{
-		utils::DrawPolygon(m_Vertices[platformIdx]);
+		utils::DrawPolygon(m_SharedVertices[platformIdx]);
 	}
+	
+	if (m_IsInLightWorld)
+	{
+		for (int platformIdx{ 0 }; platformIdx < m_LightVertices.size(); ++platformIdx)
+		{
+			utils::DrawPolygon(m_LightVertices[platformIdx]);
+		}
+	}
+	else
+	{
+		for (int platformIdx{ 0 }; platformIdx < m_DarkVertices.size(); ++platformIdx)
+		{
+			utils::DrawPolygon(m_DarkVertices[platformIdx]);
+		}
+	}
+
+
 	m_Camera.Reset();
 }
 
@@ -82,30 +129,19 @@ void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
 	//std::cout << "KEYDOWN event: " << e.keysym.sym << std::endl;
 }
-
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 {
-	//std::cout << "KEYUP event: " << e.keysym.sym << std::endl;
-	//switch ( e.keysym.sym )
-	//{
-	//case SDLK_LEFT:
-	//	//std::cout << "Left arrow key released\n";
-	//	break;
-	//case SDLK_RIGHT:
-	//	//std::cout << "`Right arrow key released\n";
-	//	break;
-	//case SDLK_1:
-	//case SDLK_KP_1:
-	//	//std::cout << "Key 1 released\n";
-	//	break;
-	//}
+	switch (e.keysym.sym)
+	{
+	case SDLK_f:
+		m_IsInLightWorld = not m_IsInLightWorld;
+		break;
+	}
 }
-
 void Game::ProcessMouseMotionEvent( const SDL_MouseMotionEvent& e )
 {
 	//std::cout << "MOUSEMOTION event: " << e.x << ", " << e.y << std::endl;
 }
-
 void Game::ProcessMouseDownEvent( const SDL_MouseButtonEvent& e )
 {
 	//std::cout << "MOUSEBUTTONDOWN event: ";
@@ -123,40 +159,33 @@ void Game::ProcessMouseDownEvent( const SDL_MouseButtonEvent& e )
 	//}
 	
 }
-
 void Game::ProcessMouseUpEvent( const SDL_MouseButtonEvent& e )
 {
 	//std::cout << "MOUSEBUTTONUP event: ";
-	//switch ( e.button )
-	//{
-	//case SDL_BUTTON_LEFT:
-	//	std::cout << " left button " << std::endl;
-	//	break;
-	//case SDL_BUTTON_RIGHT:
-	//	std::cout << " right button " << std::endl;
-	//	break;
-	//case SDL_BUTTON_MIDDLE:
-	//	std::cout << " middle button " << std::endl;
-	//	break;
-	//}
+	switch (e.button)
+	{
+	case SDL_BUTTON_LEFT:
+		std::cout << Vector2f(float(e.x), float(e.y)) << std::endl;
+		break;
+	}
 }
 
 void Game::ClearBackground( ) const
 {
-	glClearColor( 0.0f, 0.0f, 0.3f, 1.0f );
+	glClearColor( 0.4f, 0.5f, .7f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
 }
 
 void Game::CalculateLevelBounds()
 {
-	Vector2f vertex{ m_Vertices[0][0] };
+	Vector2f vertex{ m_SharedVertices[0][0] };
 	m_LevelBounds = Rectf{ vertex.x, vertex.y, vertex.x, vertex.y };
 
-	for (int platformIdx{ 0 }; platformIdx < m_Vertices.size(); ++platformIdx)
+	for (int platformIdx{ 0 }; platformIdx < m_SharedVertices.size(); ++platformIdx)
 	{
-		for (int vertexIdx{ 0 }; vertexIdx < m_Vertices[platformIdx].size(); ++vertexIdx)
+		for (int vertexIdx{ 0 }; vertexIdx < m_SharedVertices[platformIdx].size(); ++vertexIdx)
 		{
-			Vector2f vertex{ m_Vertices[platformIdx][vertexIdx] };
+			Vector2f vertex{ m_SharedVertices[platformIdx][vertexIdx] };
 
 			if (vertex.x < m_LevelBounds.left) m_LevelBounds.left = vertex.x;
 			if (vertex.x > m_LevelBounds.left + m_LevelBounds.width) m_LevelBounds.width = vertex.x - m_LevelBounds.left;
