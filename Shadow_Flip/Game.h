@@ -1,5 +1,8 @@
 #pragma once
 #include "BaseGame.h"
+#include "Player.h"
+#include <vector>
+#include "Camera.h"
 class Game : public BaseGame
 {
 public:
@@ -27,4 +30,12 @@ private:
 	void Initialize();
 	void Cleanup( );
 	void ClearBackground( ) const;
+
+	void CalculateLevelBounds();
+
+	//MEMBERS
+	Player m_Player;
+	Camera m_Camera;
+	std::vector<std::vector<Vector2f>> m_Vertices;
+	Rectf m_LevelBounds;
 };
