@@ -19,7 +19,6 @@ private:
 	std::vector<std::vector<Vector2f>> m_LevelVertices;
 	std::vector<PressureSwitch> m_Switches;
 	std::vector<Door> m_Doors;
-
 	Circlef m_EndCollectible;
 };
 

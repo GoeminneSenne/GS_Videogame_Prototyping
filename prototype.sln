@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Portotype", "Portotype\Port
 		{5ADAB721-CB6C-4EF5-89EB-20EC51A13CFC} = {5ADAB721-CB6C-4EF5-89EB-20EC51A13CFC}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shadow_Flip", "Shadow_Flip\Shadow_Flip.vcxproj", "{C97A8A8D-F581-4D9E-948D-0A2B732AA8DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,6 +36,14 @@ Global
 		{1C530E36-977E-4D58-AF26-932121464BEB}.Release|x64.Build.0 = Release|x64
 		{1C530E36-977E-4D58-AF26-932121464BEB}.Release|x86.ActiveCfg = Release|Win32
 		{1C530E36-977E-4D58-AF26-932121464BEB}.Release|x86.Build.0 = Release|Win32
+		{C97A8A8D-F581-4D9E-948D-0A2B732AA8DD}.Debug|x64.ActiveCfg = Debug|x64
+		{C97A8A8D-F581-4D9E-948D-0A2B732AA8DD}.Debug|x64.Build.0 = Debug|x64
+		{C97A8A8D-F581-4D9E-948D-0A2B732AA8DD}.Debug|x86.ActiveCfg = Debug|Win32
+		{C97A8A8D-F581-4D9E-948D-0A2B732AA8DD}.Debug|x86.Build.0 = Debug|Win32
+		{C97A8A8D-F581-4D9E-948D-0A2B732AA8DD}.Release|x64.ActiveCfg = Release|x64
+		{C97A8A8D-F581-4D9E-948D-0A2B732AA8DD}.Release|x64.Build.0 = Release|x64
+		{C97A8A8D-F581-4D9E-948D-0A2B732AA8DD}.Release|x86.ActiveCfg = Release|Win32
+		{C97A8A8D-F581-4D9E-948D-0A2B732AA8DD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,16 +1,8 @@
 #include "pch.h"
 #include "Game.h"
-#include "Player.h"
-#include "utils.h"
-#include "Level.h"
-#include <iostream>
 
 Game::Game( const Window& window ) 
-	: BaseGame{ window }
-	, m_pPlayer1{new Player(200.f, 200.f, true)}
-	, m_pPlayer2{new Player(120.f, 400.f, false)}
-	, m_LoadingAccuSec{0.f}
-	, m_pLevel{new Level{}}
+	:BaseGame{ window }
 {
 	Initialize();
 }
@@ -22,77 +14,35 @@ Game::~Game( )
 
 void Game::Initialize( )
 {
-	std::cout << "Press the \"F\" key to switch between characters\n";
+	
 }
 
 void Game::Cleanup( )
 {
-	delete m_pPlayer1;
-	delete m_pPlayer2;
-	delete m_pLevel;
 }
 
 void Game::Update( float elapsedSec )
 {
-	if (utils::IsOverlapping(m_pPlayer1->GetBounds(), m_pLevel->GetEndCollectible()) || utils::IsOverlapping(m_pPlayer2->GetBounds(), m_pLevel->GetEndCollectible()))
-	{
-		const float loadingTime{ 2.5f };
-
-		m_LoadingAccuSec += elapsedSec;
-		if (m_LoadingAccuSec >= loadingTime)
-		{
-			m_LoadingAccuSec = 0.f;
-			ResetLevel();
-		}
-
-		return;
-	}
-
-	m_pLevel->Update(*m_pPlayer1, *m_pPlayer2);
-
-	std::vector<std::vector<Vector2f>> levelVertices{ m_pLevel->GetLevelVertices()};
-	for (const Door& door : m_pLevel->GetDoors())
-	{
-		if (!door.isOpened())
-		{
-			levelVertices.push_back(door.GetVertices());
-		}
-	}
-
-	m_pPlayer1->Update(elapsedSec, levelVertices);
-	m_pPlayer2->Update(elapsedSec, levelVertices);
-	
+	// Check keyboard state
+	//const Uint8 *pStates = SDL_GetKeyboardState( nullptr );
+	//if ( pStates[SDL_SCANCODE_RIGHT] )
+	//{
+	//	std::cout << "Right arrow key is down\n";
+	//}
+	//if ( pStates[SDL_SCANCODE_LEFT] && pStates[SDL_SCANCODE_UP])
+	//{
+	//	std::cout << "Left and up arrow keys are down\n";
+	//}
 }
 
 void Game::Draw( ) const
 {
 	ClearBackground( );
-
-	if (utils::IsOverlapping(m_pPlayer1->GetBounds(), m_pLevel->GetEndCollectible()) || utils::IsOverlapping(m_pPlayer2->GetBounds(), m_pLevel->GetEndCollectible()))
-	{
-		utils::SetColor(Color4f(0.f, 0.f, 0.f, 1.f));
-		utils::FillRect(GetViewPort());
-		return;
-	}
-
-	m_pLevel->Draw();
-	m_pPlayer1->Draw();
-	m_pPlayer2->Draw();
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
 	//std::cout << "KEYDOWN event: " << e.keysym.sym << std::endl;
-	switch (e.keysym.sym)
-	{
-	case SDLK_f:
-		m_pPlayer2->SetIsSelected(m_pPlayer1->IsSelected());
-		m_pPlayer1->SetIsSelected(not m_pPlayer1->IsSelected()); //Swap boolean of player 1 and 2
-
-		break;
-	default:
-		break;
-	}
 }
 
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
@@ -157,14 +107,4 @@ void Game::ClearBackground( ) const
 {
 	glClearColor( 0.0f, 0.0f, 0.3f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
-}
-
-void Game::ResetLevel()
-{
-	m_pPlayer1->SetPosition(200.f, 200.f);
-	m_pPlayer1->SetIsSelected(true);
-	m_pPlayer2->SetPosition(120.f, 400.f);
-	m_pPlayer2->SetIsSelected(false);
-	
-	m_pLevel = new Level{};
 }
