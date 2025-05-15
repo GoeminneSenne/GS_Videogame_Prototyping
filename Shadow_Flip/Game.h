@@ -32,6 +32,7 @@ private:
 	void ClearBackground( ) const;
 
 	void CalculateLevelBounds();
+	void CalculateVectorBounds(std::vector<std::vector<Vector2f>> vertices);
 
 	//MEMBERS
 	Player m_Player;
@@ -41,5 +42,6 @@ private:
 	std::vector<std::vector<Vector2f>> m_DarkVertices;
 	Rectf m_LevelBounds;
 
+	const Vector2f m_StartingPosition;
 	bool m_IsInLightWorld;
 };

@@ -123,3 +123,9 @@ Vector2f Player::GetPosition() const
 {
 	return Vector2f(m_Bounds.left, m_Bounds.bottom);
 }
+
+void Player::SetPosition(const Vector2f& pos)
+{
+	m_Bounds.left = pos.x;
+	m_Bounds.bottom = pos.y;
+}

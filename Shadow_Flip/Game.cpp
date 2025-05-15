@@ -8,6 +8,8 @@ Game::Game( const Window& window )
 	, m_Player{100.f, 100.f, 30.f, 30.f}
 	, m_Camera{GetViewPort().width, GetViewPort().height}
 	, m_IsInLightWorld{true}
+	, m_StartingPosition{100.f, 100.f}
+	, m_LevelBounds{0,0,0,0}
 {
 	Initialize();
 }
@@ -19,29 +21,40 @@ Game::~Game( )
 
 void Game::Initialize( )
 {
-	std::vector<Vector2f> m_Ground{
-		Vector2f{ 0 , 94 },
-		Vector2f{ 94 , 94 },
-		Vector2f{ 94 , 38 },
-		Vector2f{ 188 , 38 },
-		Vector2f{ 188 , 65 },
-		Vector2f{ 282 , 65 },
-		Vector2f{ 282 , 97 },
-		Vector2f{ 376 , 97 },
-		Vector2f{ 376 , 43 },
-		Vector2f{ 470 , 43 },
-		Vector2f{ 470 , 114 },
-		Vector2f{ 564 , 114 },
-		Vector2f{ 564 , 7 },
-		Vector2f{ 752 , 7 },
-		Vector2f{ 752 , 118 },
-		Vector2f{ 846 , 118 },
-		Vector2f{ 846 , 25 },
-		Vector2f{ 940 , 25 },
-		Vector2f{ 846 , 0 },
-		Vector2f{ 0 , 0 },
-		Vector2f{ 0 , 94 }
+
+
+	std::vector<Vector2f> m_Ground1{
+	Vector2f{ 0 , 94 },
+	Vector2f{ 94 , 94 },
+	Vector2f{ 94 , 38 },
+	Vector2f{ 188 , 38 },
+	Vector2f{ 188 , 65 },
+	Vector2f{ 282 , 65 },
+	Vector2f{ 282 , 97 },
+	Vector2f{ 376 , 97 },
+	Vector2f{ 376 , 43 },
+	Vector2f{ 470 , 43 },
+	Vector2f{ 470 , 114 },
+	Vector2f{ 564 , 114 },
+	Vector2f{ 564 , 0 },
+	Vector2f{ 0 , 0 },
+	Vector2f{ 0 , 94 }
 	};
+	std::vector<Vector2f> m_Ground2{
+	Vector2f{ 752 , 0 },
+	Vector2f{ 752 , 118 },
+	Vector2f{ 846 , 118 },
+	Vector2f{ 846 , 0 },
+	Vector2f{ 752 , 0 },
+	};
+	std::vector<Vector2f> m_Ground3{
+		Vector2f{1400, 0},
+		Vector2f{1400, 280},
+		Vector2f{1850, 280},
+		Vector2f{1850, 0},
+		Vector2f{1400, 0}
+	};
+
 	std::vector<Vector2f> m_LightPlatform{
 		Vector2f{150, 200},
 		Vector2f{150, 250},
@@ -56,9 +69,39 @@ void Game::Initialize( )
 		Vector2f{620.f, 80.f},
 		Vector2f{620.f, 118.f}
 	};
-	m_SharedVertices.push_back(m_Ground);
+
+	std::vector<Vector2f> m_LightPlatform2{
+		Vector2f{900, 130},
+		Vector2f{900, 160},
+		Vector2f{1000, 160},
+		Vector2f{1000, 130},
+		Vector2f{900, 130}
+	};
+	std::vector<Vector2f> m_LightPlatform3{
+		Vector2f {1050, 160},
+		Vector2f {1050, 210},
+		Vector2f {1100, 210},
+		Vector2f {1100, 160},
+		Vector2f {1050, 160}
+	};
+
+	std::vector<Vector2f> m_DarkPlatform2{
+		Vector2f {1200, 200},
+		Vector2f {1200, 250},
+		Vector2f {1250, 250},
+		Vector2f {1250, 200},
+		Vector2f {1200, 200}
+	};
+
+
+	m_SharedVertices.push_back(m_Ground1);
+	m_SharedVertices.push_back(m_Ground2);
+	m_SharedVertices.push_back(m_Ground3);
 	m_LightVertices.push_back(m_LightPlatform);
+	m_LightVertices.push_back(m_LightPlatform2);
+	m_LightVertices.push_back(m_LightPlatform3);
 	m_DarkVertices.push_back(m_DarkPlatform);
+	m_DarkVertices.push_back(m_DarkPlatform2);
 
 	CalculateLevelBounds();
 }
@@ -82,6 +125,11 @@ void Game::Update( float elapsedSec )
 	}
 
 	m_Player.Update(elapsedSec, activeVertices);
+
+	if (m_Player.GetPosition().y < 0.f)
+	{
+		m_Player.SetPosition(m_StartingPosition);
+	}
 }
 
 void Game::Draw( ) const
@@ -178,10 +226,16 @@ void Game::ClearBackground( ) const
 
 void Game::CalculateLevelBounds()
 {
-	Vector2f vertex{ m_SharedVertices[0][0] };
-	m_LevelBounds = Rectf{ vertex.x, vertex.y, vertex.x, vertex.y };
+	CalculateVectorBounds(m_SharedVertices);
+	CalculateVectorBounds(m_LightVertices);
+	CalculateVectorBounds(m_DarkVertices);
 
-	for (int platformIdx{ 0 }; platformIdx < m_SharedVertices.size(); ++platformIdx)
+	std::cout << m_LevelBounds.left << "  " << m_LevelBounds.bottom << "  " << m_LevelBounds.width << "  " << m_LevelBounds.height << "\n";
+}
+
+void Game::CalculateVectorBounds(std::vector<std::vector<Vector2f>> vertices)
+{
+	for (int platformIdx{ 0 }; platformIdx < vertices.size(); ++platformIdx)
 	{
 		for (int vertexIdx{ 0 }; vertexIdx < m_SharedVertices[platformIdx].size(); ++vertexIdx)
 		{
@@ -193,6 +247,4 @@ void Game::CalculateLevelBounds()
 			if (vertex.y > m_LevelBounds.bottom + m_LevelBounds.height) m_LevelBounds.height = vertex.y - m_LevelBounds.bottom;
 		}
 	}
-
-	std::cout << m_LevelBounds.left << "  " << m_LevelBounds.bottom << "  " << m_LevelBounds.width << "  " << m_LevelBounds.height << "\n";
 }

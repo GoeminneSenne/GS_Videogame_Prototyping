@@ -11,6 +11,7 @@ public:
 	void Move(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& levelVertices);
 
 	Vector2f GetPosition() const;
+	void SetPosition(const Vector2f& pos);
 private:
 	Rectf m_Bounds;
 	Vector2f m_Velocity;

@@ -24,10 +24,10 @@ void Camera::Aim(float levelW, float levelH, Vector2f trackCenter) const
 	{
 		bottomLeft.y = 0.f;
 	}
-	else if (bottomLeft.y + m_ScreenHeight > levelH)
-	{
-		bottomLeft.y = levelH - m_ScreenHeight;
-	}
+	//else if (bottomLeft.y + m_ScreenHeight > levelH)
+	//{
+	//	bottomLeft.y = levelH - m_ScreenHeight;
+	//}
 
 	glPushMatrix();
 	// transform modelview matrix to inverse camera transform!!
