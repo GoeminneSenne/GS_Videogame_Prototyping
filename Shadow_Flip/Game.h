@@ -31,6 +31,8 @@ private:
 	void Cleanup( );
 	void ClearBackground( ) const;
 
+	void DrawLevel() const;
+
 	void CalculateLevelBounds();
 	void CalculateVectorBounds(std::vector<std::vector<Vector2f>> vertices);
 

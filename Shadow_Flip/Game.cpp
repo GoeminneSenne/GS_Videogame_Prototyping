@@ -133,39 +133,9 @@ void Game::Draw( ) const
 {
 	ClearBackground();
 
-	if (m_IsInLightWorld)
-	{
-		utils::SetColor(Color4f(0.9f, 1.f, 0.6f, 1.f));
-	}
-	else
-	{
-		utils::SetColor(Color4f(0.33f, 0.f, 0.66f, 1.f));
-	}
-
-
 	m_Camera.Aim(m_LevelBounds.width, m_LevelBounds.height, m_Player.GetPosition());
-	m_Player.Draw();
-
-	for (int platformIdx{ 0 }; platformIdx < m_SharedVertices.size(); ++platformIdx)
-	{
-		utils::DrawPolygon(m_SharedVertices[platformIdx]);
-	}
-	
-	if (m_IsInLightWorld)
-	{
-		for (int platformIdx{ 0 }; platformIdx < m_LightVertices.size(); ++platformIdx)
-		{
-			utils::DrawPolygon(m_LightVertices[platformIdx]);
-		}
-	}
-	else
-	{
-		for (int platformIdx{ 0 }; platformIdx < m_DarkVertices.size(); ++platformIdx)
-		{
-			utils::DrawPolygon(m_DarkVertices[platformIdx]);
-		}
-	}
-
+	m_Player.Draw();	
+	DrawLevel();
 
 	m_Camera.Reset();
 }
@@ -219,6 +189,36 @@ void Game::ClearBackground( ) const
 {
 	glClearColor( 0.4f, 0.5f, .7f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
+}
+
+void Game::DrawLevel() const
+{
+	const Color4f baseLevelColor{0.4f, 0.85f, 0.33f, 1.f};
+	const Color4f lightColor{ 0.9f, 1.f, 0.6f, 1.f };
+	const Color4f shadowColor{ 0.33f, 0.f, 0.66f, 1.f };
+
+	for (int platformIdx{ 0 }; platformIdx < m_SharedVertices.size(); ++platformIdx)
+	{
+		utils::SetColor(baseLevelColor);
+		utils::DrawPolygon(m_SharedVertices[platformIdx], true, 2.f);
+	}
+
+	if (m_IsInLightWorld)
+	{
+		for (int platformIdx{ 0 }; platformIdx < m_LightVertices.size(); ++platformIdx)
+		{
+			utils::SetColor(lightColor);
+			utils::DrawPolygon(m_LightVertices[platformIdx]);
+		}
+	}
+	else
+	{
+		for (int platformIdx{ 0 }; platformIdx < m_DarkVertices.size(); ++platformIdx)
+		{
+			utils::SetColor(shadowColor);
+			utils::DrawPolygon(m_DarkVertices[platformIdx]);
+		}
+	}
 }
 
 void Game::CalculateLevelBounds()
