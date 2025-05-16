@@ -179,7 +179,8 @@ void Game::ProcessMouseUpEvent( const SDL_MouseButtonEvent& e )
 	switch (e.button)
 	{
 	case SDL_BUTTON_LEFT:
-		std::cout << Vector2f(float(e.x), float(e.y)) << std::endl;
+		//std::cout << Vector2f(float(e.x), float(e.y)) << std::endl;
+		m_Player.ShadowFlip();
 		break;
 	}
 }

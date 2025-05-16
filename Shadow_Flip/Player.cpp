@@ -51,7 +51,7 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 			m_Velocity.y += JUMP_POWER;
 			std::cout << m_Velocity.y << "\n";
 		}
-		else if (m_HasDoubleJump && m_Velocity.y <= DOUBLE_JUMP_TRESHOLD)
+		else if (m_HasDoubleJump and m_IsLight and m_Velocity.y <= DOUBLE_JUMP_TRESHOLD)
 		{
 			m_Velocity.y += JUMP_POWER;
 			m_HasDoubleJump = false;
