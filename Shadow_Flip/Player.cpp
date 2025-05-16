@@ -61,34 +61,6 @@ void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<V
 	m_HitCeiling = false;
 	utils::HitInfo hitInfo{};
 
-	if (deltaMovement.x != 0.f)
-	{
-		//Wall collision
-		Vector2f TopRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + m_Bounds.height - 1.f };
-		Vector2f TopRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + m_Bounds.height - 1.f };
-		Vector2f BottomRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + 1.f };
-		Vector2f BottomRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + 1.f };
-
-
-		for (int vectorIdx{ 0 }; vectorIdx < levelVertices.size(); ++vectorIdx)
-		{
-			if (utils::Raycast(levelVertices[vectorIdx], BottomRayStart, BottomRayEnd, hitInfo)
-				|| utils::Raycast(levelVertices[vectorIdx], TopRayStart, TopRayEnd, hitInfo))
-			{
-				if (hitInfo.normal.x > 0.f)
-				{
-					m_Bounds.left = hitInfo.intersectPoint.x + 1.f;
-				}
-				else if (hitInfo.normal.x < 0.f)
-				{
-					m_Bounds.left = hitInfo.intersectPoint.x - m_Bounds.width - 1.f;
-				}
-
-				break;
-			}
-		}
-	}
-
 	if (deltaMovement.y != 0.f)
 	{
 		//Ceiling/Floor collision 
@@ -117,6 +89,36 @@ void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<V
 			}
 		}
 	}
+
+	if (deltaMovement.x != 0.f)
+	{
+		//Wall collision
+		Vector2f TopRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + m_Bounds.height - 1.f };
+		Vector2f TopRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + m_Bounds.height - 1.f };
+		Vector2f BottomRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + 1.f };
+		Vector2f BottomRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + 1.f };
+
+
+		for (int vectorIdx{ 0 }; vectorIdx < levelVertices.size(); ++vectorIdx)
+		{
+			if (utils::Raycast(levelVertices[vectorIdx], BottomRayStart, BottomRayEnd, hitInfo)
+				|| utils::Raycast(levelVertices[vectorIdx], TopRayStart, TopRayEnd, hitInfo))
+			{
+				if (hitInfo.normal.x > 0.f)
+				{
+					m_Bounds.left = hitInfo.intersectPoint.x + 1.f;
+				}
+				else if (hitInfo.normal.x < 0.f)
+				{
+					m_Bounds.left = hitInfo.intersectPoint.x - m_Bounds.width - 1.f;
+				}
+
+				break;
+			}
+		}
+	}
+
+
 }
 
 Vector2f Player::GetPosition() const

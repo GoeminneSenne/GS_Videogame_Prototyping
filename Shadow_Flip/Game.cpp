@@ -54,7 +54,6 @@ void Game::Initialize( )
 		Vector2f{1850, 0},
 		Vector2f{1400, 0}
 	};
-
 	std::vector<Vector2f> m_LightPlatform{
 		Vector2f{150, 200},
 		Vector2f{150, 250},
@@ -69,7 +68,6 @@ void Game::Initialize( )
 		Vector2f{620.f, 80.f},
 		Vector2f{620.f, 118.f}
 	};
-
 	std::vector<Vector2f> m_LightPlatform2{
 		Vector2f{900, 130},
 		Vector2f{900, 160},
@@ -84,7 +82,6 @@ void Game::Initialize( )
 		Vector2f {1100, 160},
 		Vector2f {1050, 160}
 	};
-
 	std::vector<Vector2f> m_DarkPlatform2{
 		Vector2f {1200, 200},
 		Vector2f {1200, 250},

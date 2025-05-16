@@ -17,5 +17,6 @@ private:
 	Vector2f m_Velocity;
 	bool m_IsGrounded;
 	bool m_HitCeiling;
+	bool m_HasDoubleJump;
 };
 
