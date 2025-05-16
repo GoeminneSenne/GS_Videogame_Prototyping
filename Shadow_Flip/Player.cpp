@@ -1,12 +1,14 @@
 #include "pch.h"
 #include "Player.h"
 #include "utils.h"
+#include <iostream>
 
 Player::Player(Vector2f pos, float width, float height)
 	: m_Bounds{pos.x, pos.y, width, height}
 	, m_Velocity{0.f, 0.f}
 	, m_IsGrounded{false}
 	, m_HitCeiling{false}
+	, m_HasDoubleJump{true}
 {
 }
 
@@ -26,6 +28,7 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	const float GRAVITY{ -2000.f };
 	const float JUMP_POWER{ 600.f };
 	const float MOVE_SPEED{ 300.f };
+	const float DOUBLE_JUMP_TRESHOLD{ 0.f };
 	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
 
 	m_Velocity.y += GRAVITY * elapsedSec;
@@ -40,9 +43,19 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	{
 		m_Velocity.x += MOVE_SPEED;
 	}
-	if (pStates[SDL_SCANCODE_SPACE] && m_IsGrounded)
+	if (pStates[SDL_SCANCODE_SPACE])
 	{
-		m_Velocity.y += JUMP_POWER;
+		if (m_IsGrounded)
+		{
+			m_Velocity.y += JUMP_POWER;
+			std::cout << m_Velocity.y << "\n";
+		}
+		else if (m_HasDoubleJump && m_Velocity.y <= DOUBLE_JUMP_TRESHOLD)
+		{
+			m_Velocity.y += JUMP_POWER;
+			m_HasDoubleJump = false;
+			std::cout << m_Velocity.y << "\n";
+		}
 	}
 
 	//Move character
@@ -79,6 +92,7 @@ void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<V
 				{
 					m_Bounds.bottom = hitInfo.intersectPoint.y;
 					m_IsGrounded = true;
+					m_HasDoubleJump = true;
 				}
 				else if (hitInfo.normal.y < 0.f)
 				{
