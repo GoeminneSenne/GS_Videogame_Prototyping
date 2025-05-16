@@ -8,8 +8,9 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_Velocity{0.f, 0.f}
 	, m_IsGrounded{false}
 	, m_HitCeiling{false}
-	, m_HasDoubleJump{true}
+	, m_CanDoubleJump{true}
 	, m_IsLight{true}
+	, m_IsDashing{false}
 {
 }
 
@@ -29,6 +30,7 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	const float GRAVITY{ -2000.f };
 	const float JUMP_POWER{ 600.f };
 	const float MOVE_SPEED{ 300.f };
+	const float DASH_SPEED{ 600.f };
 	const float DOUBLE_JUMP_TRESHOLD{ 0.f };
 	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
 
@@ -51,10 +53,12 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 			m_Velocity.y += JUMP_POWER;
 			std::cout << m_Velocity.y << "\n";
 		}
-		else if (m_HasDoubleJump and m_IsLight and m_Velocity.y <= DOUBLE_JUMP_TRESHOLD)
+		else if (m_CanDoubleJump and m_IsLight and m_Velocity.y <= DOUBLE_JUMP_TRESHOLD)
 		{
+			m_Velocity.y = GRAVITY * elapsedSec; //Reset gravity so double jump is consistent
+
 			m_Velocity.y += JUMP_POWER;
-			m_HasDoubleJump = false;
+			m_CanDoubleJump = false;
 			std::cout << m_Velocity.y << "\n";
 		}
 	}
@@ -93,7 +97,7 @@ void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<V
 				{
 					m_Bounds.bottom = hitInfo.intersectPoint.y;
 					m_IsGrounded = true;
-					m_HasDoubleJump = true;
+					m_CanDoubleJump = true;
 				}
 				else if (hitInfo.normal.y < 0.f)
 				{
@@ -134,6 +138,13 @@ void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<V
 	}
 
 
+}
+
+void Player::Dash()
+{
+	if (m_IsDashing) return;
+
+	m_IsDashing = true;
 }
 
 Vector2f Player::GetPosition() const

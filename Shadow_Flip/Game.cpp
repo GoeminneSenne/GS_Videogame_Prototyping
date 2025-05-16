@@ -182,7 +182,11 @@ void Game::ProcessMouseUpEvent( const SDL_MouseButtonEvent& e )
 		//std::cout << Vector2f(float(e.x), float(e.y)) << std::endl;
 		m_Player.ShadowFlip();
 		break;
+	case SDL_BUTTON_RIGHT:
+		m_Player.Dash();
+		break;
 	}
+	
 }
 
 void Game::ClearBackground( ) const
