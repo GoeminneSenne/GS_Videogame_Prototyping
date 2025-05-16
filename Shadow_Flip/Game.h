@@ -45,5 +45,4 @@ private:
 	Rectf m_LevelBounds;
 
 	const Vector2f m_StartingPosition;
-	bool m_IsInLightWorld;
 };

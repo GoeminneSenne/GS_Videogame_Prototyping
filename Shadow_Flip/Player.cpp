@@ -9,6 +9,7 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_IsGrounded{false}
 	, m_HitCeiling{false}
 	, m_HasDoubleJump{true}
+	, m_IsLight{true}
 {
 }
 
@@ -144,4 +145,14 @@ void Player::SetPosition(const Vector2f& pos)
 {
 	m_Bounds.left = pos.x;
 	m_Bounds.bottom = pos.y;
+}
+
+bool Player::IsLight() const
+{
+	return m_IsLight;
+}
+
+void Player::ShadowFlip()
+{
+	m_IsLight = not m_IsLight;
 }

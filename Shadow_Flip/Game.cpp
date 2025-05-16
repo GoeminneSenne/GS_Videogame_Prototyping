@@ -7,7 +7,6 @@ Game::Game( const Window& window )
 	:BaseGame{ window }
 	, m_Player{100.f, 100.f, 30.f, 30.f}
 	, m_Camera{GetViewPort().width, GetViewPort().height}
-	, m_IsInLightWorld{true}
 	, m_StartingPosition{100.f, 100.f}
 	, m_LevelBounds{0,0,0,0}
 {
@@ -110,7 +109,7 @@ void Game::Cleanup( )
 void Game::Update( float elapsedSec )
 {
 	std::vector<std::vector<Vector2f>> activeVertices{m_SharedVertices};
-	if (m_IsInLightWorld)
+	if (m_Player.IsLight())
 	{
 		activeVertices.reserve(activeVertices.size() + m_LightVertices.size());
 		activeVertices.insert(activeVertices.end(), m_LightVertices.begin(), m_LightVertices.end());
@@ -149,7 +148,7 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 	switch (e.keysym.sym)
 	{
 	case SDLK_f:
-		m_IsInLightWorld = not m_IsInLightWorld;
+		m_Player.ShadowFlip();
 		break;
 	}
 }
@@ -203,7 +202,7 @@ void Game::DrawLevel() const
 		utils::DrawPolygon(m_SharedVertices[platformIdx], true, 2.f);
 	}
 
-	if (m_IsInLightWorld)
+	if (m_Player.IsLight())
 	{
 		for (int platformIdx{ 0 }; platformIdx < m_LightVertices.size(); ++platformIdx)
 		{
