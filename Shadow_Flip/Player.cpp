@@ -11,6 +11,7 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_CanDoubleJump{true}
 	, m_IsLight{true}
 	, m_IsDashing{false}
+	,m_IsLookingRight{true}
 {
 }
 
@@ -51,7 +52,6 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 		if (m_IsGrounded)
 		{
 			m_Velocity.y += JUMP_POWER;
-			std::cout << m_Velocity.y << "\n";
 		}
 		else if (m_CanDoubleJump and m_IsLight and m_Velocity.y <= DOUBLE_JUMP_TRESHOLD)
 		{
@@ -59,7 +59,32 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 
 			m_Velocity.y += JUMP_POWER;
 			m_CanDoubleJump = false;
-			std::cout << m_Velocity.y << "\n";
+		}
+	}
+
+
+	if (m_IsDashing)
+	{
+		m_Velocity.x = DASH_SPEED;
+		if (not m_IsLookingRight) m_Velocity.x *= -1.f;
+		m_Velocity.y = 0.f;
+		m_DashAccuSec += elapsedSec;
+
+		const float DASH_MAX_SEC{ .3f };
+		if (m_DashAccuSec >= DASH_MAX_SEC)
+		{
+			m_IsDashing = false;
+		}
+	}
+	else
+	{
+		if (m_Velocity.x > 0.f)
+		{
+			m_IsLookingRight = true;
+		}
+		else if (m_Velocity.x < 0.f)
+		{
+			m_IsLookingRight = false;
 		}
 	}
 
@@ -142,9 +167,10 @@ void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<V
 
 void Player::Dash()
 {
-	if (m_IsDashing) return;
+	if (m_IsDashing or m_IsLight) return;
 
 	m_IsDashing = true;
+	m_DashAccuSec = 0.f;
 }
 
 Vector2f Player::GetPosition() const

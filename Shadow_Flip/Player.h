@@ -23,7 +23,10 @@ private:
 	bool m_HitCeiling;
 	bool m_IsLight;
 
+	bool m_IsLookingRight;
+
 	bool m_CanDoubleJump;
 	bool m_IsDashing;
+	float m_DashAccuSec;
 };
 
