@@ -31,6 +31,9 @@ private:
 	void Cleanup( );
 	void ClearBackground( ) const;
 
+	void CreateTestLevel();
+	void CreateLevel();
+
 	void DrawLevel() const;
 
 	void CalculateLevelBounds();

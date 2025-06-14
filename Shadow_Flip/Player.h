@@ -36,5 +36,6 @@ private:
 
 	void CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices);
 	void CheckVerticalCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices);
+	bool IsShadowUnderWall(const std::vector<std::vector<Vector2f>>& vertices);
 };
 

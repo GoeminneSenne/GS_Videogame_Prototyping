@@ -2,14 +2,15 @@
 #include "Game.h"
 #include "utils.h"
 #include <iostream>
+#include "SVGParser.h"
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
-	, m_Player{100.f, 100.f, 30.f, 30.f}
+	, m_Player{100.f, 100.f, 40.f, 40.f}
 	, m_Camera{GetViewPort().width, GetViewPort().height}
 	, m_StartingPosition{100.f, 100.f}
 	, m_LevelBounds{0,0,0,0}
-	, m_ShadowArea{100, 35, 150, 5}
+	, m_ShadowArea{}
 {
 	Initialize();
 }
@@ -23,82 +24,8 @@ void Game::Initialize( )
 {
 
 
-	std::vector<Vector2f> m_Ground1{
-	Vector2f{ 0 , 94 },
-	Vector2f{ 94 , 94 },
-	Vector2f{ 94 , 38 },
-	Vector2f{ 282 , 38 },
-	Vector2f{ 282 , 97 },
-	Vector2f{ 376 , 97 },
-	Vector2f{ 376 , 43 },
-	Vector2f{ 470 , 43 },
-	Vector2f{ 470 , 114 },
-	Vector2f{ 564 , 114 },
-	Vector2f{ 564 , 0 },
-	Vector2f{ 0 , 0 },
-	Vector2f{ 0 , 94 }
-	};
-	std::vector<Vector2f> m_Ground2{
-	Vector2f{ 752 , 0 },
-	Vector2f{ 752 , 118 },
-	Vector2f{ 846 , 118 },
-	Vector2f{ 846 , 0 },
-	Vector2f{ 752 , 0 },
-	};
-	std::vector<Vector2f> m_Ground3{
-		Vector2f{1400, 0},
-		Vector2f{1400, 280},
-		Vector2f{1850, 280},
-		Vector2f{1850, 0},
-		Vector2f{1400, 0}
-	};
-	std::vector<Vector2f> m_LightPlatform{
-		Vector2f{150, 200},
-		Vector2f{150, 250},
-		Vector2f{250, 250},
-		Vector2f{250, 200},
-		Vector2f{150, 200}
-	};
-	std::vector<Vector2f> m_DarkPlatform {
-		Vector2f{620.f, 118.f},
-		Vector2f{700.f, 118.f},
-		Vector2f{700.f, 80.f},
-		Vector2f{620.f, 80.f},
-		Vector2f{620.f, 118.f}
-	};
-	std::vector<Vector2f> m_LightPlatform2{
-		Vector2f{900, 130},
-		Vector2f{900, 160},
-		Vector2f{1000, 160},
-		Vector2f{1000, 130},
-		Vector2f{900, 130}
-	};
-	std::vector<Vector2f> m_LightPlatform3{
-		Vector2f {1050, 160},
-		Vector2f {1050, 210},
-		Vector2f {1100, 210},
-		Vector2f {1100, 160},
-		Vector2f {1050, 160}
-	};
-	std::vector<Vector2f> m_DarkPlatform2{
-		Vector2f {1200, 200},
-		Vector2f {1200, 250},
-		Vector2f {1250, 250},
-		Vector2f {1250, 200},
-		Vector2f {1200, 200}
-	};
-
-
-	m_SharedVertices.push_back(m_Ground1);
-	m_SharedVertices.push_back(m_Ground2);
-	m_SharedVertices.push_back(m_Ground3);
-	m_LightVertices.push_back(m_LightPlatform);
-	m_LightVertices.push_back(m_LightPlatform2);
-	m_LightVertices.push_back(m_LightPlatform3);
-	m_DarkVertices.push_back(m_DarkPlatform);
-	m_DarkVertices.push_back(m_DarkPlatform2);
-
-	CalculateLevelBounds();
+	//m_ShadowArea = Rectf(100, 35, 150, 5);
+	CreateLevel();
 }
 
 void Game::Cleanup( )
@@ -152,7 +79,11 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 	case SDLK_f:
 		m_Player.ShadowFlip();
 		break;
+	case SDLK_d:
+		m_Player.Dash();
+		break;
 	}
+
 }
 void Game::ProcessMouseMotionEvent( const SDL_MouseMotionEvent& e )
 {
@@ -195,6 +126,91 @@ void Game::ClearBackground( ) const
 {
 	glClearColor( 0.4f, 0.5f, .7f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
+}
+
+void Game::CreateTestLevel()
+{
+
+
+	std::vector<Vector2f> m_Ground1{
+	   Vector2f{ 0 , 94 },
+	   Vector2f{ 94 , 94 },
+	   Vector2f{ 94 , 38 },
+	   Vector2f{ 282 , 38 },
+	   Vector2f{ 282 , 97 },
+	   Vector2f{ 376 , 97 },
+	   Vector2f{ 376 , 43 },
+	   Vector2f{ 470 , 43 },
+	   Vector2f{ 470 , 114 },
+	   Vector2f{ 564 , 114 },
+	   Vector2f{ 564 , 0 },
+	   Vector2f{ 0 , 0 },
+	   Vector2f{ 0 , 94 }
+	};
+	std::vector<Vector2f> m_Ground2{
+	Vector2f{ 752 , 0 },
+	Vector2f{ 752 , 118 },
+	Vector2f{ 846 , 118 },
+	Vector2f{ 846 , 0 },
+	Vector2f{ 752 , 0 },
+	};
+	std::vector<Vector2f> m_Ground3{
+		Vector2f{1400, 0},
+		Vector2f{1400, 280},
+		Vector2f{1850, 280},
+		Vector2f{1850, 0},
+		Vector2f{1400, 0}
+	};
+	std::vector<Vector2f> m_LightPlatform{
+		Vector2f{150, 200},
+		Vector2f{150, 250},
+		Vector2f{250, 250},
+		Vector2f{250, 200},
+		Vector2f{150, 200}
+	};
+	std::vector<Vector2f> m_DarkPlatform{
+		Vector2f{620.f, 118.f},
+		Vector2f{700.f, 118.f},
+		Vector2f{700.f, 80.f},
+		Vector2f{620.f, 80.f},
+		Vector2f{620.f, 118.f}
+	};
+	std::vector<Vector2f> m_LightPlatform2{
+		Vector2f{900, 130},
+		Vector2f{900, 160},
+		Vector2f{1000, 160},
+		Vector2f{1000, 130},
+		Vector2f{900, 130}
+	};
+	std::vector<Vector2f> m_LightPlatform3{
+		Vector2f {1050, 160},
+		Vector2f {1050, 210},
+		Vector2f {1100, 210},
+		Vector2f {1100, 160},
+		Vector2f {1050, 160}
+	};
+	std::vector<Vector2f> m_DarkPlatform2{
+		Vector2f {1200, 200},
+		Vector2f {1200, 250},
+		Vector2f {1250, 250},
+		Vector2f {1250, 200},
+		Vector2f {1200, 200}
+	};
+
+	m_SharedVertices.push_back(m_Ground1);
+	m_SharedVertices.push_back(m_Ground2);
+	m_SharedVertices.push_back(m_Ground3);
+	m_LightVertices.push_back(m_LightPlatform);
+	m_LightVertices.push_back(m_LightPlatform2);
+	m_LightVertices.push_back(m_LightPlatform3);
+	m_DarkVertices.push_back(m_DarkPlatform);
+	m_DarkVertices.push_back(m_DarkPlatform2);
+}
+
+void Game::CreateLevel()
+{
+	SVGParser::GetVerticesFromSvgFile("level.svg", m_SharedVertices);
+	CalculateLevelBounds();
 }
 
 void Game::DrawLevel() const

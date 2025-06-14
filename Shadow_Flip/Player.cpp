@@ -42,7 +42,7 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	const float GRAVITY{ -2000.f };
 	const float JUMP_POWER{ 600.f };
 	const float MOVE_SPEED{ 300.f };
-	const float DASH_SPEED{ 600.f };
+	const float DASH_SPEED{ 650.f };
 	const float DOUBLE_JUMP_TRESHOLD{ 0.f };
 	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
 
@@ -79,10 +79,10 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	{
 		m_Velocity.x = DASH_SPEED;
 		if (not m_IsLookingRight) m_Velocity.x *= -1.f;
-		m_Velocity.y = 0.f;
+		if(m_Velocity.y < 0.f) m_Velocity.y = 0.f;
 		m_DashAccuSec += elapsedSec;
 
-		const float DASH_MAX_SEC{ .3f };
+		const float DASH_MAX_SEC{ .5f };
 		if (m_DashAccuSec >= DASH_MAX_SEC)
 		{
 			m_IsDashing = false;
@@ -119,10 +119,20 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	}
 	else if (m_IsInShadowArea && pStates[SDL_SCANCODE_UP])
 	{
-		std::cout << "Exited shadow\n";
-		m_IsInShadowArea = false;
 
 		m_Bounds.height = m_Height;
+		if (not IsShadowUnderWall(levelVertices))
+		{
+			std::cout << "Exited shadow\n";
+			m_IsInShadowArea = false;
+			m_CurrentShadowBounds = Rectf();
+		}
+		else
+		{
+			m_Bounds.height = shadowArea.height;
+		}
+
+
 	}
 
 }
@@ -134,8 +144,8 @@ void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<V
 	
 	if (not m_IsInShadowArea)
 	{
-		CheckWallCollision(deltaMovement, levelVertices);
-		CheckVerticalCollision(deltaMovement, levelVertices);
+		if(deltaMovement.x != 0.f)	CheckWallCollision(deltaMovement, levelVertices);
+		if(deltaMovement.y != 0.f)  CheckVerticalCollision(deltaMovement, levelVertices);
 	}
 	else
 	{
@@ -183,7 +193,7 @@ void Player::ShadowFlip()
 
 void Player::CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices)
 {
-	if (deltaMovement.x == 0.f) return;
+	//if (deltaMovement.x == 0.f) return;
 
 	utils::HitInfo hitInfo;
 	Vector2f TopRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + m_Bounds.height - 1.f };
@@ -205,13 +215,12 @@ void Player::CheckWallCollision(const Vector2f& deltaMovement, const std::vector
 			{
 				m_Bounds.left = hitInfo.intersectPoint.x - m_Bounds.width - 1.f;
 			}
-			break;
 		}
 	}
 }
 void Player::CheckVerticalCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices)
 {
-	if (deltaMovement.y != 0.f)
+	//if (deltaMovement.y != 0.f)
 	{
 		m_IsGrounded = false;
 		m_HitCeiling = false;
@@ -242,5 +251,25 @@ void Player::CheckVerticalCollision(const Vector2f& deltaMovement, const std::ve
 			}
 		}
 	}
+}
+
+bool Player::IsShadowUnderWall(const std::vector<std::vector<Vector2f>>& vertices)
+{
+	utils::HitInfo hitInfo;
+	Vector2f TopRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + m_Bounds.height - 1.f };
+	Vector2f TopRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + m_Bounds.height - 1.f };
+	Vector2f BottomRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + 1.f };
+	Vector2f BottomRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + 1.f };
+
+
+	for (int vectorIdx{ 0 }; vectorIdx < vertices.size(); ++vectorIdx)
+	{
+		if (utils::Raycast(vertices[vectorIdx], BottomRayStart, BottomRayEnd, hitInfo)
+			|| utils::Raycast(vertices[vectorIdx], TopRayStart, TopRayEnd, hitInfo))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
