@@ -15,7 +15,7 @@ public:
 	void SetPosition(const Vector2f& pos);
 	bool IsLight() const;
 	void ShadowFlip();
-
+	
 private:
 	Rectf m_Bounds;
 	const float m_Width;
@@ -23,7 +23,7 @@ private:
 	Vector2f m_Velocity;
 	bool m_IsGrounded;
 	bool m_HitCeiling;
-
+	
 	bool m_IsLight;
 	bool m_IsLookingRight;
 	bool m_CanDoubleJump;

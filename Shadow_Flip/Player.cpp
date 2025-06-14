@@ -40,10 +40,12 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 {
 	//Variables
 	const float GRAVITY{ -2000.f };
-	const float JUMP_POWER{ 600.f };
 	const float MOVE_SPEED{ 300.f };
 	const float DASH_SPEED{ 650.f };
-	const float DOUBLE_JUMP_TRESHOLD{ 0.f };
+	const float JUMP_POWER{ 600.f };
+	const float DOUBLE_JUMP_TRESHOLD{ 5.f };
+	const float SUPER_JUMP_POWER{1000.f};
+
 	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
 
 	m_Velocity.y += GRAVITY * elapsedSec;
@@ -62,14 +64,22 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	{
 		if (m_IsGrounded)
 		{
-			m_Velocity.y += JUMP_POWER;
-			m_CanDoubleJump = true;
+			if (pStates[SDL_SCANCODE_UP])
+			{
+				m_Velocity.y += SUPER_JUMP_POWER;
+				m_CanDoubleJump = false;
+			}
+			else
+			{
+				m_Velocity.y += JUMP_POWER;
+				m_CanDoubleJump = true;
+			}
 		}
 		else if (m_CanDoubleJump and m_IsLight and m_Velocity.y <= DOUBLE_JUMP_TRESHOLD)
 		{
 			m_Velocity.y = GRAVITY * elapsedSec; //Reset gravity so double jump is consistent
 
-			m_Velocity.y += JUMP_POWER;
+			m_Velocity.y += JUMP_POWER * 0.75f; //2e jump is minder hoog
 			m_CanDoubleJump = false;
 		}
 	}
@@ -144,8 +154,8 @@ void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<V
 	
 	if (not m_IsInShadowArea)
 	{
-		if(deltaMovement.x != 0.f)	CheckWallCollision(deltaMovement, levelVertices);
 		if(deltaMovement.y != 0.f)  CheckVerticalCollision(deltaMovement, levelVertices);
+		if(deltaMovement.x != 0.f)	CheckWallCollision(deltaMovement, levelVertices);
 	}
 	else
 	{
