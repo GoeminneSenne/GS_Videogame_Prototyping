@@ -27,6 +27,8 @@ private:
 	bool m_IsLight;
 	bool m_IsLookingRight;
 	bool m_CanDoubleJump;
+
+	float m_GlideTimer;
 	
 	bool m_IsDashing;
 	float m_DashAccuSec;

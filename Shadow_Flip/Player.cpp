@@ -17,6 +17,7 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_Height{height}
 	, m_IsInShadowArea{false}
 	, m_CurrentShadowBounds{}
+	, m_GlideTimer{0.f}
 {
 }
 
@@ -48,8 +49,9 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 
 	const Uint8* pStates = SDL_GetKeyboardState(nullptr);
 
-	m_Velocity.y += GRAVITY * elapsedSec;
 	m_Velocity.x = 0.f;
+	m_Velocity.y += GRAVITY * elapsedSec;
+
 
 	//Handle input
 	if (pStates[SDL_SCANCODE_LEFT])
@@ -82,6 +84,18 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 			m_Velocity.y += JUMP_POWER * 0.75f; //2e jump is minder hoog
 			m_CanDoubleJump = false;
 		}
+		else if (m_Velocity.y <= 0.f)
+		{
+			const float GLIDE_MAX_TIME{ 0.7f };
+			if (m_GlideTimer <= GLIDE_MAX_TIME)
+			{
+				m_GlideTimer += elapsedSec;
+
+				m_Velocity.y = GRAVITY * elapsedSec; //Gliding has constant downward speed instead of accelerating
+				m_Velocity.x /= 2.3f; // Halve movespeed while gliding
+			}
+
+		}
 	}
 
 
@@ -110,13 +124,19 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 		}
 	}
 
-	//Move character
+	//Adjust velocity in certain cases:
 	if (m_IsInShadowArea) m_Velocity.y = 0.f;
+	if (m_Velocity.y > JUMP_POWER * 0.75f && not m_CanDoubleJump) m_Velocity.x /= 2.2f;
+
+	//Move character
 	Move(m_Velocity * elapsedSec, levelVertices);
 	if (m_IsGrounded or m_HitCeiling)
 	{
 		m_Velocity.y = 0.f;
+	
+		m_GlideTimer = 0.f;
 	}
+
 
 	if (utils::IsOverlapping(shadowArea, m_Bounds) && pStates[SDL_SCANCODE_DOWN] && m_IsGrounded && not m_IsInShadowArea && not m_IsLight)
 	{
