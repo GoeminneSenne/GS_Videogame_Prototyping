@@ -39,11 +39,11 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	m_Velocity.x = 0.f;
 
 	//Handle input
-	if (pStates[SDL_SCANCODE_A])
+	if (pStates[SDL_SCANCODE_LEFT])
 	{
 		m_Velocity.x -= MOVE_SPEED;
 	}
-	if (pStates[SDL_SCANCODE_D])
+	if (pStates[SDL_SCANCODE_RIGHT])
 	{
 		m_Velocity.x += MOVE_SPEED;
 	}
