@@ -11,7 +11,12 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_CanDoubleJump{true}
 	, m_IsLight{true}
 	, m_IsDashing{false}
-	,m_IsLookingRight{true}
+	, m_IsLookingRight{true}
+	, m_DashAccuSec{0.f}
+	, m_Width{width}
+	, m_Height{height}
+	, m_IsInShadowArea{false}
+	, m_CurrentShadowBounds{}
 {
 }
 
@@ -22,10 +27,16 @@ Player::Player(float x, float y, float width, float height)
 
 void Player::Draw() const
 {
+	const Color4f lightColor{ 0.9f, 1.f, 0.6f, 1.f };
+	const Color4f shadowColor{ 0.33f, 0.f, 0.66f, 1.f };
+
+	if (m_IsLight) utils::SetColor(lightColor);
+	else utils::SetColor(shadowColor);
+
 	utils::FillRect(m_Bounds);
 }
 
-void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices)
+void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const Rectf& shadowArea)
 {
 	//Variables
 	const float GRAVITY{ -2000.f };
@@ -47,11 +58,12 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	{
 		m_Velocity.x += MOVE_SPEED;
 	}
-	if (pStates[SDL_SCANCODE_SPACE])
+	if (pStates[SDL_SCANCODE_SPACE] && not m_IsInShadowArea)
 	{
 		if (m_IsGrounded)
 		{
 			m_Velocity.y += JUMP_POWER;
+			m_CanDoubleJump = true;
 		}
 		else if (m_CanDoubleJump and m_IsLight and m_Velocity.y <= DOUBLE_JUMP_TRESHOLD)
 		{
@@ -89,80 +101,53 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	}
 
 	//Move character
+	if (m_IsInShadowArea) m_Velocity.y = 0.f;
 	Move(m_Velocity * elapsedSec, levelVertices);
 	if (m_IsGrounded or m_HitCeiling)
 	{
 		m_Velocity.y = 0.f;
 	}
+
+	if (utils::IsOverlapping(shadowArea, m_Bounds) && pStates[SDL_SCANCODE_DOWN] && m_IsGrounded && not m_IsInShadowArea && not m_IsLight)
+	{
+		std::cout << "Entered shadow\n";
+		m_IsInShadowArea = true;
+		m_CurrentShadowBounds = shadowArea;
+
+		m_Bounds.bottom = shadowArea.bottom;
+		m_Bounds.height = shadowArea.height;
+	}
+	else if (m_IsInShadowArea && pStates[SDL_SCANCODE_UP])
+	{
+		std::cout << "Exited shadow\n";
+		m_IsInShadowArea = false;
+
+		m_Bounds.height = m_Height;
+	}
+
 }
 
 void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& levelVertices)
 {
 	m_Bounds.left += deltaMovement.x;
 	m_Bounds.bottom += deltaMovement.y;
-	m_IsGrounded = false;
-	m_HitCeiling = false;
-	utils::HitInfo hitInfo{};
-
-	if (deltaMovement.y != 0.f)
+	
+	if (not m_IsInShadowArea)
 	{
-		//Ceiling/Floor collision 
-		Vector2f leftRayStart{ m_Bounds.left + 1.f, m_Bounds.bottom - 1.f };
-		Vector2f leftRayEnd{ leftRayStart.x, leftRayStart.y + m_Bounds.height };
-		Vector2f rightRayStart{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom - 1.f };
-		Vector2f rightRayEnd{ leftRayStart.x + m_Bounds.width, rightRayStart.y + m_Bounds.height };
-
-		for (int vectorIdx{ 0 }; vectorIdx < levelVertices.size(); ++vectorIdx)
+		CheckWallCollision(deltaMovement, levelVertices);
+		CheckVerticalCollision(deltaMovement, levelVertices);
+	}
+	else
+	{
+		if (m_Bounds.left < m_CurrentShadowBounds.left)
 		{
-
-			if (utils::Raycast(levelVertices[vectorIdx], leftRayStart, leftRayEnd, hitInfo)
-				|| utils::Raycast(levelVertices[vectorIdx], rightRayStart, rightRayEnd, hitInfo))
-			{
-				if (hitInfo.normal.y > 0.f && deltaMovement.y < 0.f)
-				{
-					m_Bounds.bottom = hitInfo.intersectPoint.y;
-					m_IsGrounded = true;
-					m_CanDoubleJump = true;
-				}
-				else if (hitInfo.normal.y < 0.f)
-				{
-					m_Bounds.bottom = hitInfo.intersectPoint.y - m_Bounds.height - 1.f;
-					m_HitCeiling = true;
-				}
-				break;
-			}
+			m_Bounds.left = m_CurrentShadowBounds.left;
+		}
+		if(m_Bounds.left + m_Bounds.width > m_CurrentShadowBounds.left + m_CurrentShadowBounds.width)
+		{
+			m_Bounds.left = m_CurrentShadowBounds.left + m_CurrentShadowBounds.width - m_Bounds.width;
 		}
 	}
-
-	if (deltaMovement.x != 0.f)
-	{
-		//Wall collision
-		Vector2f TopRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + m_Bounds.height - 1.f };
-		Vector2f TopRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + m_Bounds.height - 1.f };
-		Vector2f BottomRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + 1.f };
-		Vector2f BottomRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + 1.f };
-
-
-		for (int vectorIdx{ 0 }; vectorIdx < levelVertices.size(); ++vectorIdx)
-		{
-			if (utils::Raycast(levelVertices[vectorIdx], BottomRayStart, BottomRayEnd, hitInfo)
-				|| utils::Raycast(levelVertices[vectorIdx], TopRayStart, TopRayEnd, hitInfo))
-			{
-				if (hitInfo.normal.x > 0.f)
-				{
-					m_Bounds.left = hitInfo.intersectPoint.x + 1.f;
-				}
-				else if (hitInfo.normal.x < 0.f)
-				{
-					m_Bounds.left = hitInfo.intersectPoint.x - m_Bounds.width - 1.f;
-				}
-
-				break;
-			}
-		}
-	}
-
-
 }
 
 void Player::Dash()
@@ -191,5 +176,71 @@ bool Player::IsLight() const
 
 void Player::ShadowFlip()
 {
+	if (m_IsInShadowArea) return;
+
 	m_IsLight = not m_IsLight;
 }
+
+void Player::CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices)
+{
+	if (deltaMovement.x == 0.f) return;
+
+	utils::HitInfo hitInfo;
+	Vector2f TopRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + m_Bounds.height - 1.f };
+	Vector2f TopRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + m_Bounds.height - 1.f };
+	Vector2f BottomRayStart{ m_Bounds.left - 1.f, m_Bounds.bottom + 1.f };
+	Vector2f BottomRayEnd{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom + 1.f };
+
+
+	for (int vectorIdx{ 0 }; vectorIdx < vertices.size(); ++vectorIdx)
+	{
+		if (utils::Raycast(vertices[vectorIdx], BottomRayStart, BottomRayEnd, hitInfo)
+			|| utils::Raycast(vertices[vectorIdx], TopRayStart, TopRayEnd, hitInfo))
+		{
+			if (hitInfo.normal.x > 0.f)
+			{
+				m_Bounds.left = hitInfo.intersectPoint.x + 1.f;
+			}
+			else if (hitInfo.normal.x < 0.f)
+			{
+				m_Bounds.left = hitInfo.intersectPoint.x - m_Bounds.width - 1.f;
+			}
+			break;
+		}
+	}
+}
+void Player::CheckVerticalCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices)
+{
+	if (deltaMovement.y != 0.f)
+	{
+		m_IsGrounded = false;
+		m_HitCeiling = false;
+
+		utils::HitInfo hitInfo;
+		Vector2f leftRayStart{ m_Bounds.left + 1.f, m_Bounds.bottom - 1.f };
+		Vector2f leftRayEnd{ leftRayStart.x, leftRayStart.y + m_Bounds.height };
+		Vector2f rightRayStart{ m_Bounds.left + m_Bounds.width, m_Bounds.bottom - 1.f };
+		Vector2f rightRayEnd{ leftRayStart.x + m_Bounds.width, rightRayStart.y + m_Bounds.height };
+
+		for (int vectorIdx{ 0 }; vectorIdx < vertices.size(); ++vectorIdx)
+		{
+
+			if (utils::Raycast(vertices[vectorIdx], leftRayStart, leftRayEnd, hitInfo)
+				|| utils::Raycast(vertices[vectorIdx], rightRayStart, rightRayEnd, hitInfo))
+			{
+				if (hitInfo.normal.y > 0.f && deltaMovement.y < 0.f)
+				{
+					m_Bounds.bottom = hitInfo.intersectPoint.y;
+					m_IsGrounded = true;
+				}
+				else if (hitInfo.normal.y < 0.f)
+				{
+					m_Bounds.bottom = hitInfo.intersectPoint.y - m_Bounds.height - 1.f;
+					m_HitCeiling = true;
+				}
+				break;
+			}
+		}
+	}
+}
+

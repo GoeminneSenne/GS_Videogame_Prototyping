@@ -9,6 +9,7 @@ Game::Game( const Window& window )
 	, m_Camera{GetViewPort().width, GetViewPort().height}
 	, m_StartingPosition{100.f, 100.f}
 	, m_LevelBounds{0,0,0,0}
+	, m_ShadowArea{100, 35, 150, 5}
 {
 	Initialize();
 }
@@ -26,9 +27,7 @@ void Game::Initialize( )
 	Vector2f{ 0 , 94 },
 	Vector2f{ 94 , 94 },
 	Vector2f{ 94 , 38 },
-	Vector2f{ 188 , 38 },
-	Vector2f{ 188 , 65 },
-	Vector2f{ 282 , 65 },
+	Vector2f{ 282 , 38 },
 	Vector2f{ 282 , 97 },
 	Vector2f{ 376 , 97 },
 	Vector2f{ 376 , 43 },
@@ -120,7 +119,7 @@ void Game::Update( float elapsedSec )
 		activeVertices.insert(activeVertices.end(), m_DarkVertices.begin(), m_DarkVertices.end());
 	}
 
-	m_Player.Update(elapsedSec, activeVertices);
+	m_Player.Update(elapsedSec, activeVertices, m_ShadowArea);
 
 	if (m_Player.GetPosition().y < 0.f)
 	{
@@ -133,8 +132,11 @@ void Game::Draw( ) const
 	ClearBackground();
 
 	m_Camera.Aim(m_LevelBounds.width, m_LevelBounds.height, m_Player.GetPosition());
-	m_Player.Draw();	
 	DrawLevel();
+	utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
+	utils::FillRect(m_ShadowArea);
+	
+	m_Player.Draw();	
 
 	m_Camera.Reset();
 }
