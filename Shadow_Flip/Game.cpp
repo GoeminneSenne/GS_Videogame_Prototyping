@@ -3,6 +3,7 @@
 #include "utils.h"
 #include <iostream>
 #include "SVGParser.h"
+#include "Texture.h"
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
@@ -85,7 +86,8 @@ void Game::Draw( ) const
 	utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
 	
 	m_Player.Draw();	
-	DrawLensMeter(windowBottomLeft);
+	DrawUI(windowBottomLeft);
+
 
 	////////////////////VOORLOPIG
 	for (const Checkpoint& cp : m_CheckPoints)
@@ -302,22 +304,39 @@ void Game::DrawLevel() const
 	}
 }
 
-void Game::DrawLensMeter(const Vector2f& windowBottomLeft) const
+void Game::DrawUI(const Vector2f& windowBottomLeft) const
 {
+	//Calculate Topleft
 	const float BORDER_MARGIN{ 10.f };
-	const float METER_WIDTH{ 200.f }, METER_HEIGHT{ 30.f };
-	const Color4f meterColor{ 0.f, 0.f, 0.7f, 1.f };
-
 	Vector2f drawPos{ windowBottomLeft };
 	drawPos.x += BORDER_MARGIN;
-	drawPos.y += GetViewPort().height - METER_HEIGHT - BORDER_MARGIN;
+	drawPos.y += GetViewPort().height - BORDER_MARGIN;
 
+	//DrawHealth
+	const float CIRCLE_RADIUS{ 25.f};
+	drawPos.x += CIRCLE_RADIUS;
+	drawPos.y -= CIRCLE_RADIUS;
+	
+	utils::SetColor(Color4f(0.9f, 0.1f, 0.1f, 1.f));
+	utils::FillEllipse(drawPos, CIRCLE_RADIUS, CIRCLE_RADIUS);
+
+	std::string lives{ std::to_string(m_Player.GetLives()) };
+	Texture livesTex{ lives, "DeterminationMono.ttf", 40, Color4f() };
+	livesTex.Draw(Vector2f(drawPos.x - livesTex.GetWidth()/2.f, drawPos.y - livesTex.GetHeight()/2.f));
+
+	//DrawMeter
+	const float METER_WIDTH{ 200.f }, METER_HEIGHT{ 30.f };
+	const Color4f meterColor{ 0.f, 0.f, 0.7f, 1.f };
 	float currentWidth{ m_Player.GetLensTime() / m_Player.GetLensMax() };
+	drawPos.x += CIRCLE_RADIUS + BORDER_MARGIN;
+	drawPos.y -= METER_HEIGHT / 2.f;
 
 	utils::SetColor(meterColor);
 	utils::FillRect(drawPos, METER_WIDTH * currentWidth, METER_HEIGHT);
 	utils::SetColor(Color4f(0.f, 0.f, 0.f, 1.f));
 	utils::DrawRect(drawPos, METER_WIDTH, METER_HEIGHT, 6.f);
+
+
 }
 
 
