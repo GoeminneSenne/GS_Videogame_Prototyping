@@ -23,15 +23,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.125"
-     inkscape:cx="15080"
-     inkscape:cy="7716"
+     inkscape:zoom="0.0625"
+     inkscape:cx="17520"
+     inkscape:cy="8840"
      inkscape:window-width="3440"
      inkscape:window-height="1369"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer4"
      showguides="true" />
   <defs
      id="defs1" />
@@ -264,7 +264,7 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Player"
-     style="display:none">
+     style="display:inline">
     <rect
        style="fill:#0c92e8;fill-opacity:1;stroke-width:0.352777"
        id="rect2"
@@ -272,5 +272,10 @@
        height="40"
        x="3421.4404"
        y="2332.0515" />
+    <path
+       style="display:inline;fill:#ef1d1d;stroke-width:0.264583;fill-opacity:1"
+       d="M 5981.7,3975.1 V 1727.2 H 4617.5083 v 893.2333 h -930.275 V 3035.3 H 2142.0666 v 952.4999 z"
+       id="path1"
+       sodipodi:nodetypes="ccccccccc" />
   </g>
 </svg>

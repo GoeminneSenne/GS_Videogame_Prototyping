@@ -11,7 +11,7 @@ Game::Game( const Window& window )
 	, m_Camera{GetViewPort().width, GetViewPort().height}
 	, m_StartingPosition{100.f, 100.f}
 	, m_LevelBounds{0,0,0,0}
-	, m_CurrentCheckPoint{0}
+	, m_CurrentCheckPoint{4}
 {
 	Initialize();
 }
@@ -32,6 +32,12 @@ void Game::Cleanup( )
 
 void Game::Update( float elapsedSec )
 {
+	if (m_Player.GetLives() < 0)
+	{
+		return;
+	}
+
+
 	if (m_Player.IsLight())
 	{
 		m_Player.Update(elapsedSec, m_SharedVertices, m_LightVertices, m_ShadowAreas);
@@ -58,10 +64,13 @@ void Game::Update( float elapsedSec )
 	}
 
 
-
-
 	//Doodgaan
-	if (m_Player.GetPosition().y < 0.f)
+	const float playerSize{ m_Player.GetBounds().width / 2.f };
+	Circlef playerCircle{ m_Player.GetPosition(), playerSize };
+	playerCircle.center.x += playerSize;
+	playerCircle.center.y += playerSize;
+
+	if (m_Player.GetPosition().y < 0.f || utils::IsOverlapping(m_Deadzone[0], playerCircle))
 	{
 		m_Player.Respawn(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
 	}
@@ -83,6 +92,8 @@ void Game::Draw( ) const
 	{
 		utils::DrawRect(cp.GetTriggerBounds());
 	}
+
+	utils::DrawPolygon(m_Deadzone[0]);
 
 
 
@@ -237,6 +248,7 @@ void Game::CreateLevel()
 	SVGParser::GetVerticesFromSvgFile("level_shared.svg", m_SharedVertices);
 	SVGParser::GetVerticesFromSvgFile("level_light.svg", m_LightVertices);
 	SVGParser::GetVerticesFromSvgFile("level_dark.svg", m_DarkVertices);
+	SVGParser::GetVerticesFromSvgFile("level_deadzone.svg", m_Deadzone);
 	CalculateLevelBounds();
 
 	m_ShadowAreas.push_back(Rectf(1780.f, 1202.f, 190.f, 5.f));
@@ -314,8 +326,6 @@ void Game::CalculateLevelBounds()
 	CalculateVectorBounds(m_SharedVertices);
 	CalculateVectorBounds(m_LightVertices);
 	CalculateVectorBounds(m_DarkVertices);
-
-	std::cout << m_LevelBounds.left << "  " << m_LevelBounds.bottom << "  " << m_LevelBounds.width << "  " << m_LevelBounds.height << "\n";
 }
 
 void Game::CalculateVectorBounds(std::vector<std::vector<Vector2f>> vertices)

@@ -20,6 +20,7 @@ public:
 	float GetLensTime() const;
 	float GetLensMax() const;
 	void ResetLensTime();
+	int GetLives() const;
 
 	void Respawn(const Vector2f& pos);
 	
@@ -46,6 +47,8 @@ private:
 	bool m_IsUsingLens;
 	const float m_LensTimerMax;
 	float m_LensTimer;
+	
+	int m_Lives;
 
 	void CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices);
 	void CheckVerticalCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices);

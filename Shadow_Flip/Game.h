@@ -47,6 +47,7 @@ private:
 	std::vector<std::vector<Vector2f>> m_SharedVertices;
 	std::vector<std::vector<Vector2f>> m_LightVertices;
 	std::vector<std::vector<Vector2f>> m_DarkVertices;
+	std::vector<std::vector<Vector2f>> m_Deadzone;
 	
 	std::vector<Checkpoint> m_CheckPoints;
 	int m_CurrentCheckPoint;

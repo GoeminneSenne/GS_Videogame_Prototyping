@@ -21,6 +21,7 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_IsUsingLens{false}
 	, m_LensTimerMax{5.f}
 	, m_LensTimer{5.f}
+	, m_Lives{5}
 {
 }
 
@@ -280,12 +281,26 @@ void Player::ResetLensTime()
 	m_LensTimer = m_LensTimerMax;
 }
 
+int Player::GetLives() const
+{
+	return m_Lives;
+}
+
 void Player::Respawn(const Vector2f& pos)
 {
 	m_Bounds.left = pos.x;
 	m_Bounds.bottom = pos.y;
 	m_Velocity.y = 0.f;
+	--m_Lives;
 	ResetLensTime();
+
+	if (m_Lives >= 0)
+	{
+		std::cout << m_Lives << " lives remaining\n";
+	} else
+	{
+		std::cout << "\nPlayer has no more lives, GAME OVER\n";
+	}
 }
 
 void Player::CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices)
