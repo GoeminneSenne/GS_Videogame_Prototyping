@@ -6,7 +6,8 @@
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
-	, m_Player{100.f, 100.f, 40.f, 40.f}
+	//, m_Player{100.f, 100.f, 40.f, 40.f}
+	, m_Player{4020.f, 2540.f, 40.f, 40.f}
 	, m_Camera{GetViewPort().width, GetViewPort().height}
 	, m_StartingPosition{100.f, 100.f}
 	, m_LevelBounds{0,0,0,0}
@@ -208,6 +209,9 @@ void Game::CreateLevel()
 	CalculateLevelBounds();
 
 	m_ShadowAreas.push_back(Rectf(1780.f, 1202.f, 190.f, 5.f));
+	m_ShadowAreas.push_back(Rectf(3530.f, 1623.f, 170.f, 5.f));
+	m_ShadowAreas.push_back(Rectf(3880, 1701, 170.f, 5.f));
+	m_ShadowAreas.push_back(Rectf(3870, 2235, 170.f, 5.f));
 }
 
 void Game::DrawLevel() const

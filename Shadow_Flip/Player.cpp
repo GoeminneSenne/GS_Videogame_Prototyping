@@ -66,7 +66,7 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	{
 		if (m_IsGrounded)
 		{
-			if (pStates[SDL_SCANCODE_UP])
+			if (pStates[SDL_SCANCODE_UP] && m_IsLight)
 			{
 				m_Velocity.y += SUPER_JUMP_POWER;
 				m_CanDoubleJump = false;
