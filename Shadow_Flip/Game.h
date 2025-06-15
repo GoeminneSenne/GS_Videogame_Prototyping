@@ -4,6 +4,7 @@
 #include <vector>
 #include "Camera.h"
 #include "Checkpoint.h"
+#include "Hint.h"
 class Texture;
 class Game : public BaseGame
 {
@@ -45,17 +46,14 @@ private:
 	//MEMBERS
 	Player m_Player;
 	Camera m_Camera;
+	Rectf m_LevelBounds;
 	std::vector<std::vector<Vector2f>> m_SharedVertices;
 	std::vector<std::vector<Vector2f>> m_LightVertices;
 	std::vector<std::vector<Vector2f>> m_DarkVertices;
 	std::vector<std::vector<Vector2f>> m_Deadzone;
 	
-	std::vector<Checkpoint> m_CheckPoints;
 	int m_CurrentCheckPoint;
-
-	Rectf m_LevelBounds;
-
+	std::vector<Checkpoint> m_CheckPoints;
+	std::vector<Hint> m_Hints;
 	std::vector<Rectf> m_ShadowAreas;
-
-	const Vector2f m_StartingPosition;
 };

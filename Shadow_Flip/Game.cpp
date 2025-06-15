@@ -8,11 +8,10 @@
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
 	, m_Player{100.f, 100.f, 40.f, 40.f}
-	//, m_Player{4020.f, 2540.f, 40.f, 40.f}
+	//, m_Player{ 5370, 3090, 40.f, 40.f}
 	, m_Camera{GetViewPort().width, GetViewPort().height}
-	, m_StartingPosition{100.f, 100.f}
 	, m_LevelBounds{0,0,0,0}
-	, m_CurrentCheckPoint{4}
+	, m_CurrentCheckPoint{0}
 {
 	Initialize();
 }
@@ -64,6 +63,15 @@ void Game::Update( float elapsedSec )
 		}
 	}
 
+	//Check hints
+	for (Hint& hint : m_Hints)
+	{
+		if (utils::IsOverlapping(m_Player.GetBounds(), hint.GetTriggerBounds()))
+		{
+			hint.Activate();
+		}
+	}
+
 
 	//Doodgaan
 	const float playerSize{ m_Player.GetBounds().width / 2.f };
@@ -85,19 +93,31 @@ void Game::Draw( ) const
 	DrawLevel();
 	utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
 	
-	m_Player.Draw();	
-	DrawUI(windowBottomLeft);
 
 
 	////////////////////VOORLOPIG
+
 	for (const Checkpoint& cp : m_CheckPoints)
 	{
-		utils::DrawRect(cp.GetTriggerBounds());
+		if (cp.GetTriggerBounds().width != 0.f)
+		{
+
+			utils::DrawRect(cp.GetTriggerBounds());
+			cp.Draw();
+		}
 	}
 
 	utils::DrawPolygon(m_Deadzone[0]);
 
+	for (const Hint& hint : m_Hints)
+	{
+		hint.Draw();
+	}
+	/////////////////////////EINDE VOORLOPIG
 
+
+	m_Player.Draw();	
+	DrawUI(windowBottomLeft);
 
 	m_Camera.Reset();
 }
@@ -105,6 +125,11 @@ void Game::Draw( ) const
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
 	//std::cout << "KEYDOWN event: " << e.keysym.sym << std::endl;
+	if (e.keysym.sym == SDLK_v)
+	{
+		if (utils::IsOverlapping(m_Player.GetBounds(), Rectf(1140, 135, 110, 30)))
+			m_Hints[3].Activate(); //Hardcoded for now
+	}
 }
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 {
@@ -118,6 +143,12 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 		break;
 	case SDLK_r:
 		m_Player.Respawn(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
+		break;
+	case SDLK_MINUS:
+		std::cout << "minus\n";
+		break;
+	default:
+		std::cout << e.keysym.sym << "\n";
 		break;
 	}
 
@@ -263,6 +294,20 @@ void Game::CreateLevel()
 	m_CheckPoints.push_back(Checkpoint(Vector2f(2035.f, 1205.f), Rectf(2035.f, 1205.f, 40.f, 300.f)));
 	m_CheckPoints.push_back(Checkpoint(Vector2f(4025.f , 1704.f), Rectf(4020.f, 1704.f, 80.f, 200.f)));
 	m_CheckPoints.push_back(Checkpoint(Vector2f(4035.f , 2540.f), Rectf(4030.f, 2540.f, 60.f, 300.f)));
+
+	m_Hints.push_back(Hint("Use <- -> to move & SPACE to jump", Vector2f(35, 250), Rectf(0, 70, 300, 30)));
+	m_Hints.push_back(Hint("Press the V key to", Vector2f(1100, 250), Rectf(1140, 135, 110, 30)));
+	m_Hints.push_back(Hint("use your lens ability", Vector2f(1090, 225), Rectf(1140, 135, 110, 30)));
+	m_Hints.push_back(Hint("Press F to change world", Vector2f(1150, 300), Rectf()));
+	m_Hints.push_back(Hint("In shadow form press D to dash", Vector2f(1400, 570), Rectf(1650, 390, 110, 20)));
+	m_Hints.push_back(Hint("In light mode, hold UP while jumping", Vector2f(470, 800), Rectf(270, 537, 200, 20)));
+	m_Hints.push_back(Hint("to perform a super jump", Vector2f(530, 775), Rectf(270, 537, 200, 20)));
+	m_Hints.push_back(Hint("Hold SPACE to glide", Vector2f(390, 970), Rectf(145, 885, 95, 10)));
+	m_Hints.push_back(Hint("Press DOWN to enter your shadow", Vector2f(1520, 1400), Rectf(1750, 1200, 95, 20)));
+	m_Hints.push_back(Hint("Congratulations", Vector2f(5410, 3140), Rectf(5370, 3010, 240, 30)));
+	m_Hints.push_back(Hint("you reached the end", Vector2f(5390, 3115), Rectf(5370, 3010, 240, 30)));
+
+
 }
 
 void Game::DrawLevel() const
@@ -321,6 +366,7 @@ void Game::DrawUI(const Vector2f& windowBottomLeft) const
 	utils::FillEllipse(drawPos, CIRCLE_RADIUS, CIRCLE_RADIUS);
 
 	std::string lives{ std::to_string(m_Player.GetLives()) };
+	if (lives == "-1") lives = "X";
 	Texture livesTex{ lives, "DeterminationMono.ttf", 40, Color4f() };
 	livesTex.Draw(Vector2f(drawPos.x - livesTex.GetWidth()/2.f, drawPos.y - livesTex.GetHeight()/2.f));
 
