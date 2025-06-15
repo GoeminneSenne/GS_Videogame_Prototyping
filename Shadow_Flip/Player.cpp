@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "utils.h"
 #include <iostream>
+#include "Game.h"
 
 Player::Player(Vector2f pos, float width, float height)
 	: m_Bounds{pos.x, pos.y, width, height}
@@ -151,7 +152,7 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	else
 	{
 		m_Velocity.y = 0.f;
-		m_LensTimer -= elapsedSec;
+		if(not Game::m_LensCheat) m_LensTimer -= elapsedSec;
 		if (m_LensTimer < 0.f)
 		{
 			m_LensTimer = 0.f;
@@ -291,13 +292,10 @@ void Player::Respawn(const Vector2f& pos)
 	m_Bounds.left = pos.x;
 	m_Bounds.bottom = pos.y;
 	m_Velocity.y = 0.f;
-	--m_Lives;
+	if (not Game::m_HealthCheat) --m_Lives;
 	ResetLensTime();
 
-	if (m_Lives >= 0)
-	{
-		std::cout << m_Lives << " lives remaining\n";
-	} else
+	if (m_Lives < 0)
 	{
 		std::cout << "\nPlayer has no more lives, GAME OVER\n";
 	}

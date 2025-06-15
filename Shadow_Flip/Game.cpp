@@ -5,6 +5,10 @@
 #include "SVGParser.h"
 #include "Texture.h"
 
+bool Game::m_UsingCheats{ false };
+bool Game::m_HealthCheat{ false };
+bool Game::m_LensCheat{ false };
+
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
 	, m_Player{100.f, 100.f, 40.f, 40.f}
@@ -145,10 +149,42 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 		m_Player.Respawn(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
 		break;
 	case SDLK_MINUS:
-		std::cout << "minus\n";
+		if (not m_UsingCheats) std::cout << "Enabled cheats\n";
+		m_UsingCheats = true;
 		break;
+	case SDLK_0:
+		if (m_UsingCheats)
+		{
+			if (not m_HealthCheat) std::cout << "Activated health cheat\n";
+			m_HealthCheat = true;
+		}
+		break;
+	case SDLK_9:
+		if (m_UsingCheats)
+		{
+			if (not m_LensCheat) std::cout << "Activated lens cheat\n";
+			m_LensCheat = true;
+		}
+		break;
+	case SDLK_ESCAPE:
+		if(m_UsingCheats)
+		{
+			m_CurrentCheckPoint = 0;
+			m_Player.SetPosition(m_CheckPoints[0].GetRespawnPosition());
+		 }
+		break;
+	case SDLK_1:
+	case SDLK_2:
+	case SDLK_3:
+	case SDLK_4:
+		if (m_UsingCheats)
+		{
+			m_CurrentCheckPoint = e.keysym.sym - 48;
+			m_Player.SetPosition(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
+		}
+		break;
+
 	default:
-		std::cout << e.keysym.sym << "\n";
 		break;
 	}
 
@@ -293,7 +329,7 @@ void Game::CreateLevel()
 	m_CheckPoints.push_back(Checkpoint(Vector2f(800.f, 537.f), Rectf(790.f, 537.f, 30.f, 300.f)));
 	m_CheckPoints.push_back(Checkpoint(Vector2f(2035.f, 1205.f), Rectf(2035.f, 1205.f, 40.f, 300.f)));
 	m_CheckPoints.push_back(Checkpoint(Vector2f(4025.f , 1704.f), Rectf(4020.f, 1704.f, 80.f, 200.f)));
-	m_CheckPoints.push_back(Checkpoint(Vector2f(4035.f , 2540.f), Rectf(4030.f, 2540.f, 60.f, 300.f)));
+	m_CheckPoints.push_back(Checkpoint(Vector2f(4035.f , 2530.f), Rectf(4030.f, 2530.f, 60.f, 300.f)));
 
 	m_Hints.push_back(Hint("Use <- -> to move & SPACE to jump", Vector2f(35, 250), Rectf(0, 70, 300, 30)));
 	m_Hints.push_back(Hint("Press the V key to", Vector2f(1100, 250), Rectf(1140, 135, 110, 30)));

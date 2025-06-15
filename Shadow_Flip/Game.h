@@ -27,6 +27,9 @@ public:
 	void ProcessMouseDownEvent( const SDL_MouseButtonEvent& e ) override;
 	void ProcessMouseUpEvent( const SDL_MouseButtonEvent& e ) override;
 
+	static bool m_UsingCheats;
+	static bool m_HealthCheat;
+	static bool m_LensCheat;
 private:
 
 	// FUNCTIONS
