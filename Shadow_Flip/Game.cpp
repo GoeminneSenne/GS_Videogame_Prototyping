@@ -62,7 +62,7 @@ void Game::Update( float elapsedSec )
 	//Doodgaan
 	if (m_Player.GetPosition().y < 0.f)
 	{
-		m_Player.SetPosition(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
+		ResetPlayer();
 	}
 }
 
@@ -101,6 +101,9 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 		break;
 	case SDLK_d:
 		m_Player.Dash();
+		break;
+	case SDLK_r:
+		ResetPlayer();
 		break;
 	}
 
@@ -146,6 +149,13 @@ void Game::ClearBackground( ) const
 {
 	glClearColor( 0.4f, 0.5f, .7f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
+}
+
+void Game::ResetPlayer()
+{
+	m_Player.SetPosition(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
+	//HP - 1
+	//Meter hervullen
 }
 
 void Game::CreateTestLevel()
@@ -241,6 +251,9 @@ void Game::CreateLevel()
 
 	m_CheckPoints.push_back(Checkpoint(Vector2f(100.f, 100.f), Rectf()));
 	m_CheckPoints.push_back(Checkpoint(Vector2f(800.f, 537.f), Rectf(790.f, 537.f, 30.f, 300.f)));
+	m_CheckPoints.push_back(Checkpoint(Vector2f(2035.f, 1205.f), Rectf(2035.f, 1205.f, 40.f, 300.f)));
+	m_CheckPoints.push_back(Checkpoint(Vector2f(4025.f , 1704.f), Rectf(4020.f, 1704.f, 80.f, 200.f)));
+	m_CheckPoints.push_back(Checkpoint(Vector2f(4035.f , 2540.f), Rectf(4030.f, 2540.f, 60.f, 300.f)));
 }
 
 void Game::DrawLevel() const

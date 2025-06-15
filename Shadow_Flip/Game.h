@@ -32,6 +32,8 @@ private:
 	void Cleanup( );
 	void ClearBackground( ) const;
 
+	void ResetPlayer();
+
 	void CreateTestLevel();
 	void CreateLevel();
 

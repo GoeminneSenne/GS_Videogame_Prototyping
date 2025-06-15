@@ -246,6 +246,7 @@ void Player::SetPosition(const Vector2f& pos)
 {
 	m_Bounds.left = pos.x;
 	m_Bounds.bottom = pos.y;
+	m_Velocity.y = 0.f; //Reset gravity for safety
 }
 
 bool Player::IsLight() const
