@@ -11,6 +11,7 @@ Game::Game( const Window& window )
 	, m_Camera{GetViewPort().width, GetViewPort().height}
 	, m_StartingPosition{100.f, 100.f}
 	, m_LevelBounds{0,0,0,0}
+	, m_CurrentCheckPoint{0}
 {
 	Initialize();
 }
@@ -40,13 +41,28 @@ void Game::Update( float elapsedSec )
 		m_Player.Update(elapsedSec, m_SharedVertices, m_DarkVertices, m_ShadowAreas);
 	}
 
+	//Checkpoints controleren
+	if (m_CurrentCheckPoint < m_CheckPoints.size() - 1)
+	{
+		if (utils::IsOverlapping(m_Player.GetBounds(), m_CheckPoints[m_CurrentCheckPoint + 1].GetTriggerBounds()))
+		{
+			if (not m_CheckPoints[m_CurrentCheckPoint + 1].IsTriggered())
+			{
+				++m_CurrentCheckPoint;
+				m_CheckPoints[m_CurrentCheckPoint].Trigger();
+
+				std::cout << "Triggered checkpoint " << m_CurrentCheckPoint << "\n";
+			}
+		}
+	}
 
 
-	//m_Player.Update(elapsedSec, activeVertices, m_ShadowAreas);
 
+
+	//Doodgaan
 	if (m_Player.GetPosition().y < 0.f)
 	{
-		m_Player.SetPosition(m_StartingPosition);
+		m_Player.SetPosition(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
 	}
 }
 
@@ -60,6 +76,14 @@ void Game::Draw( ) const
 	
 	m_Player.Draw();	
 	DrawLensMeter(windowBottomLeft);
+
+	////////////////////VOORLOPIG
+	for (const Checkpoint& cp : m_CheckPoints)
+	{
+		utils::DrawRect(cp.GetTriggerBounds());
+	}
+
+
 
 	m_Camera.Reset();
 }
@@ -214,6 +238,9 @@ void Game::CreateLevel()
 	m_ShadowAreas.push_back(Rectf(3530.f, 1623.f, 170.f, 5.f));
 	m_ShadowAreas.push_back(Rectf(3880, 1701, 170.f, 5.f));
 	m_ShadowAreas.push_back(Rectf(3870, 2235, 170.f, 5.f));
+
+	m_CheckPoints.push_back(Checkpoint(Vector2f(100.f, 100.f), Rectf()));
+	m_CheckPoints.push_back(Checkpoint(Vector2f(800.f, 537.f), Rectf(790.f, 537.f, 30.f, 300.f)));
 }
 
 void Game::DrawLevel() const

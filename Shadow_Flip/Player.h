@@ -12,6 +12,7 @@ public:
 	void Dash();
 
 	Vector2f GetPosition() const;
+	const Rectf& GetBounds() const;
 	void SetPosition(const Vector2f& pos);
 	bool IsLight() const;
 	bool IsUsingLens() const;

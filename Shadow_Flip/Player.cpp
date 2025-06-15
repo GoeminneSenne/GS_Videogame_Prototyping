@@ -237,6 +237,11 @@ Vector2f Player::GetPosition() const
 	return Vector2f(m_Bounds.left, m_Bounds.bottom);
 }
 
+const Rectf& Player::GetBounds() const
+{
+	return m_Bounds;
+}
+
 void Player::SetPosition(const Vector2f& pos)
 {
 	m_Bounds.left = pos.x;

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include <vector>
 #include "Camera.h"
+#include "Checkpoint.h"
 class Game : public BaseGame
 {
 public:
@@ -46,6 +47,10 @@ private:
 	std::vector<std::vector<Vector2f>> m_SharedVertices;
 	std::vector<std::vector<Vector2f>> m_LightVertices;
 	std::vector<std::vector<Vector2f>> m_DarkVertices;
+	
+	std::vector<Checkpoint> m_CheckPoints;
+	int m_CurrentCheckPoint;
+
 	Rectf m_LevelBounds;
 
 	std::vector<Rectf> m_ShadowAreas;
