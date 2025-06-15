@@ -96,26 +96,17 @@ void Game::Draw( ) const
 	utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
 	
 
-
-	////////////////////VOORLOPIG
-
 	for (const Checkpoint& cp : m_CheckPoints)
 	{
 		if (cp.GetTriggerBounds().width != 0.f)
 		{
-
-			utils::DrawRect(cp.GetTriggerBounds());
 			cp.Draw();
 		}
 	}
-
-	utils::DrawPolygon(m_Deadzone[0]);
-
 	for (const Hint& hint : m_Hints)
 	{
 		hint.Draw();
 	}
-	/////////////////////////EINDE VOORLOPIG
 
 
 	m_Player.Draw();	
@@ -327,7 +318,8 @@ void Game::CreateLevel()
 	m_ShadowAreas.push_back(Rectf(3880, 1701, 170.f, 5.f));
 	m_ShadowAreas.push_back(Rectf(3870, 2235, 170.f, 5.f));
 
-	m_CheckPoints.push_back(Checkpoint(Vector2f(100.f, 100.f), Rectf()));
+
+	m_CheckPoints.push_back(Checkpoint{ Vector2f(100.f, 100.f), Rectf() });
 	m_CheckPoints.push_back(Checkpoint(Vector2f(800.f, 537.f), Rectf(790.f, 537.f, 30.f, 300.f)));
 	m_CheckPoints.push_back(Checkpoint(Vector2f(2035.f, 1205.f), Rectf(2035.f, 1205.f, 40.f, 300.f)));
 	m_CheckPoints.push_back(Checkpoint(Vector2f(4025.f , 1704.f), Rectf(4020.f, 1704.f, 80.f, 200.f)));

@@ -4,6 +4,12 @@ class Hint
 {
 public:
 	Hint(const std::string& text, const Vector2f& drawPos, const Rectf& triggerBounds);
+	~Hint();
+
+	Hint(const Hint& other);
+	Hint& operator=(const Hint& other);
+	Hint(Hint&& other) noexcept;
+	Hint& operator=(Hint&& other) noexcept;
 
 	void Draw() const;
 

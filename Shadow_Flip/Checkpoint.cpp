@@ -9,6 +9,20 @@ Checkpoint::Checkpoint(const Vector2f& respawnPos, const Rectf& triggerBounds)
 {
 }
 
+Checkpoint::~Checkpoint()
+{
+	delete m_Text;
+}
+
+Checkpoint::Checkpoint(const Checkpoint& other)
+	: m_RespawnPosition{other.m_RespawnPosition}
+	, m_TriggerBounds{other.m_TriggerBounds}
+	, m_IsTriggered{other.m_IsTriggered}
+	, m_Text{ new Texture("Checkpoint", "DeterminationMono.ttf", 30, Color4f()) }
+{
+}
+
+
 void Checkpoint::Draw() const
 {
 	Vector2f drawPos{ m_RespawnPosition };

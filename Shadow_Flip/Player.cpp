@@ -20,8 +20,8 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_CurrentShadowBounds{}
 	, m_GlideTimer{0.f}
 	, m_IsUsingLens{false}
-	, m_LensTimerMax{2.f}
-	, m_LensTimer{2.f}
+	, m_LensTimerMax{1.f}
+	, m_LensTimer{1.f}
 	, m_MaxLives{5}
 	, m_Lives{5}
 {

@@ -4,6 +4,11 @@ class Checkpoint
 {
 public:
 	Checkpoint(const Vector2f& respawnPos, const Rectf& triggerBounds);
+	~Checkpoint();
+
+	Checkpoint(const Checkpoint& other);
+	Checkpoint& operator=(const Checkpoint& other) = delete;
+	Checkpoint& operator=(Checkpoint&& other) = delete;
 
 	void Draw() const;
 
