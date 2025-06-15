@@ -19,6 +19,9 @@ public:
 	void ShadowFlip();
 	float GetLensTime() const;
 	float GetLensMax() const;
+	void ResetLensTime();
+
+	void Respawn(const Vector2f& pos);
 	
 private:
 	Rectf m_Bounds;

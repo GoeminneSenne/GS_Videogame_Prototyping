@@ -246,7 +246,6 @@ void Player::SetPosition(const Vector2f& pos)
 {
 	m_Bounds.left = pos.x;
 	m_Bounds.bottom = pos.y;
-	m_Velocity.y = 0.f; //Reset gravity for safety
 }
 
 bool Player::IsLight() const
@@ -274,6 +273,19 @@ float Player::GetLensTime() const
 float Player::GetLensMax() const
 {
 	return m_LensTimerMax;
+}
+
+void Player::ResetLensTime()
+{
+	m_LensTimer = m_LensTimerMax;
+}
+
+void Player::Respawn(const Vector2f& pos)
+{
+	m_Bounds.left = pos.x;
+	m_Bounds.bottom = pos.y;
+	m_Velocity.y = 0.f;
+	ResetLensTime();
 }
 
 void Player::CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices)

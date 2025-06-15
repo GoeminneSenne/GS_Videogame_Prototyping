@@ -50,6 +50,7 @@ void Game::Update( float elapsedSec )
 			{
 				++m_CurrentCheckPoint;
 				m_CheckPoints[m_CurrentCheckPoint].Trigger();
+				m_Player.ResetLensTime();
 
 				std::cout << "Triggered checkpoint " << m_CurrentCheckPoint << "\n";
 			}
@@ -62,7 +63,7 @@ void Game::Update( float elapsedSec )
 	//Doodgaan
 	if (m_Player.GetPosition().y < 0.f)
 	{
-		ResetPlayer();
+		m_Player.Respawn(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
 	}
 }
 
@@ -103,7 +104,7 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 		m_Player.Dash();
 		break;
 	case SDLK_r:
-		ResetPlayer();
+		m_Player.Respawn(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
 		break;
 	}
 
@@ -151,12 +152,6 @@ void Game::ClearBackground( ) const
 	glClear( GL_COLOR_BUFFER_BIT );
 }
 
-void Game::ResetPlayer()
-{
-	m_Player.SetPosition(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
-	//HP - 1
-	//Meter hervullen
-}
 
 void Game::CreateTestLevel()
 {
