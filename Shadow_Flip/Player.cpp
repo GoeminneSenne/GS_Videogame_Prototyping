@@ -20,8 +20,8 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_CurrentShadowBounds{}
 	, m_GlideTimer{0.f}
 	, m_IsUsingLens{false}
-	, m_LensTimerMax{5.f}
-	, m_LensTimer{5.f}
+	, m_LensTimerMax{2.f}
+	, m_LensTimer{2.f}
 	, m_Lives{5}
 {
 }
@@ -285,6 +285,11 @@ void Player::ResetLensTime()
 int Player::GetLives() const
 {
 	return m_Lives;
+}
+
+void Player::SetLives(int lives)
+{
+	m_Lives = lives;
 }
 
 void Player::Respawn(const Vector2f& pos)

@@ -156,6 +156,7 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 		if (m_UsingCheats)
 		{
 			if (not m_HealthCheat) std::cout << "Activated health cheat\n";
+			if (m_Player.GetLives() <= 0) m_Player.SetLives(999);
 			m_HealthCheat = true;
 		}
 		break;
@@ -163,6 +164,7 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 		if (m_UsingCheats)
 		{
 			if (not m_LensCheat) std::cout << "Activated lens cheat\n";
+			m_Player.ResetLensTime();
 			m_LensCheat = true;
 		}
 		break;

@@ -21,6 +21,7 @@ public:
 	float GetLensMax() const;
 	void ResetLensTime();
 	int GetLives() const;
+	void SetLives(int lives);
 
 	void Respawn(const Vector2f& pos);
 	
