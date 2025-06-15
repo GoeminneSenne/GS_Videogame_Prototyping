@@ -10,7 +10,6 @@ Game::Game( const Window& window )
 	, m_Camera{GetViewPort().width, GetViewPort().height}
 	, m_StartingPosition{100.f, 100.f}
 	, m_LevelBounds{0,0,0,0}
-	, m_ShadowArea{}
 {
 	Initialize();
 }
@@ -22,9 +21,6 @@ Game::~Game( )
 
 void Game::Initialize( )
 {
-
-
-	//m_ShadowArea = Rectf(100, 35, 150, 5);
 	CreateLevel();
 }
 
@@ -46,7 +42,7 @@ void Game::Update( float elapsedSec )
 		activeVertices.insert(activeVertices.end(), m_DarkVertices.begin(), m_DarkVertices.end());
 	}
 
-	m_Player.Update(elapsedSec, activeVertices, m_ShadowArea);
+	m_Player.Update(elapsedSec, activeVertices, m_ShadowAreas);
 
 	if (m_Player.GetPosition().y < 0.f)
 	{
@@ -61,7 +57,6 @@ void Game::Draw( ) const
 	m_Camera.Aim(m_LevelBounds.width, m_LevelBounds.height, m_Player.GetPosition());
 	DrawLevel();
 	utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
-	utils::FillRect(m_ShadowArea);
 	
 	m_Player.Draw();	
 
@@ -212,7 +207,7 @@ void Game::CreateLevel()
 	SVGParser::GetVerticesFromSvgFile("level.svg", m_SharedVertices);
 	CalculateLevelBounds();
 
-	m_ShadowArea = Rectf(1780.f, 1202.f, 190.f, 5.f);
+	m_ShadowAreas.push_back(Rectf(1780.f, 1202.f, 190.f, 5.f));
 }
 
 void Game::DrawLevel() const
@@ -220,6 +215,7 @@ void Game::DrawLevel() const
 	const Color4f baseLevelColor{0.4f, 0.85f, 0.33f, 1.f};
 	const Color4f lightColor{ 0.9f, 1.f, 0.6f, 1.f };
 	const Color4f shadowColor{ 0.33f, 0.f, 0.66f, 1.f };
+	const Color4f shadowAreaColor{ 1.f, 0.f, 0.f, 1.f };
 
 	for (int platformIdx{ 0 }; platformIdx < m_SharedVertices.size(); ++platformIdx)
 	{
@@ -242,6 +238,12 @@ void Game::DrawLevel() const
 			utils::SetColor(shadowColor);
 			utils::DrawPolygon(m_DarkVertices[platformIdx]);
 		}
+	}
+
+	utils::SetColor(shadowAreaColor);
+	for (const Rectf& shadowArea : m_ShadowAreas)
+	{
+		utils::FillRect(shadowArea);
 	}
 }
 

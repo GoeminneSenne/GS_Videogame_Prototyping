@@ -7,7 +7,7 @@ public:
 	Player(float x, float y, float width, float height);
 
 	void Draw() const;
-	void Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const Rectf& shadowArea);
+	void Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<Rectf>& shadowAreas);
 	void Move(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& levelVertices);
 	void Dash();
 

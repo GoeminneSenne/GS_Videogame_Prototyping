@@ -47,7 +47,7 @@ private:
 	std::vector<std::vector<Vector2f>> m_DarkVertices;
 	Rectf m_LevelBounds;
 
-	Rectf m_ShadowArea;
+	std::vector<Rectf> m_ShadowAreas;
 
 	const Vector2f m_StartingPosition;
 };

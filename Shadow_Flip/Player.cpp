@@ -37,7 +37,7 @@ void Player::Draw() const
 	utils::FillRect(m_Bounds);
 }
 
-void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const Rectf& shadowArea)
+void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<Rectf>& shadowAreas)
 {
 	//Variables
 	const float GRAVITY{ -2000.f };
@@ -138,33 +138,38 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	}
 
 
-	if (utils::IsOverlapping(shadowArea, m_Bounds) && pStates[SDL_SCANCODE_DOWN] && m_IsGrounded && not m_IsInShadowArea && not m_IsLight)
+	if (not m_IsInShadowArea && pStates[SDL_SCANCODE_DOWN] && not m_IsLight)
 	{
-		std::cout << "Entered shadow\n";
-		m_IsInShadowArea = true;
-		m_CurrentShadowBounds = shadowArea;
+		for (const Rectf& area : shadowAreas)
+		{
+			if (utils::IsOverlapping(area, m_Bounds))
+			{
+				std::cout << "Entered shadow\n";
+				m_IsInShadowArea = true;
+				m_CurrentShadowBounds = area;
 
-		m_Bounds.bottom = shadowArea.bottom;
-		m_Bounds.height = shadowArea.height;
+				m_Bounds.bottom = area.bottom;
+				m_Bounds.height = area.height;
+			
+				break;
+			}
+		}
 	}
-	else if (m_IsInShadowArea && pStates[SDL_SCANCODE_UP])
-	{
 
+	if (m_IsInShadowArea && pStates[SDL_SCANCODE_UP])
+	{
 		m_Bounds.height = m_Height;
 		if (not IsShadowUnderWall(levelVertices))
 		{
-			std::cout << "Exited shadow\n";
+			std::cout << "Exited Shadow\n";
 			m_IsInShadowArea = false;
 			m_CurrentShadowBounds = Rectf();
 		}
 		else
 		{
-			m_Bounds.height = shadowArea.height;
+			m_Bounds.height = m_CurrentShadowBounds.height;
 		}
-
-
 	}
-
 }
 
 void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& levelVertices)
