@@ -10,6 +10,7 @@ public:
 	void Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<std::vector<Vector2f>>& specificVertices, const std::vector<Rectf>& shadowAreas);
 	void Move(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<std::vector<Vector2f>>& specificVertices);
 	void Dash();
+	void Reset(const Vector2f& pos);
 
 	Vector2f GetPosition() const;
 	const Rectf& GetBounds() const;
@@ -49,6 +50,7 @@ private:
 	const float m_LensTimerMax;
 	float m_LensTimer;
 	
+	const int m_MaxLives;
 	int m_Lives;
 
 	void CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices);

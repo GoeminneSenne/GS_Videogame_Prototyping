@@ -39,6 +39,7 @@ private:
 
 	void CreateTestLevel();
 	void CreateLevel();
+	void ResetLevel();
 
 	void DrawLevel() const;
 	void DrawUI(const Vector2f& windowBottomLeft) const;

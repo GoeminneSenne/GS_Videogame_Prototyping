@@ -40,3 +40,8 @@ void Checkpoint::Trigger()
 {
 	m_IsTriggered = true;
 }
+
+void Checkpoint::Reset()
+{
+	m_IsTriggered = false;
+}

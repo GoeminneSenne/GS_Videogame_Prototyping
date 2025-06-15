@@ -22,6 +22,7 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_IsUsingLens{false}
 	, m_LensTimerMax{2.f}
 	, m_LensTimer{2.f}
+	, m_MaxLives{5}
 	, m_Lives{5}
 {
 }
@@ -234,6 +235,15 @@ void Player::Dash()
 	m_DashAccuSec = 0.f;
 }
 
+void Player::Reset(const Vector2f& pos)
+{
+	m_Bounds.left = pos.x;
+	m_Bounds.bottom = pos.y;
+	m_Velocity.y = 0.f;
+	m_LensTimer = m_LensTimerMax;
+	m_Lives = m_MaxLives;
+}
+
 Vector2f Player::GetPosition() const
 {
 	return Vector2f(m_Bounds.left, m_Bounds.bottom);
@@ -299,11 +309,6 @@ void Player::Respawn(const Vector2f& pos)
 	m_Velocity.y = 0.f;
 	if (not Game::m_HealthCheat) --m_Lives;
 	ResetLensTime();
-
-	if (m_Lives < 0)
-	{
-		std::cout << "\nPlayer has no more lives, GAME OVER\n";
-	}
 }
 
 void Player::CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices)

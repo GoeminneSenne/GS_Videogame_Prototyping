@@ -61,8 +61,6 @@ void Game::Update( float elapsedSec )
 				++m_CurrentCheckPoint;
 				m_CheckPoints[m_CurrentCheckPoint].Trigger();
 				m_Player.ResetLensTime();
-
-				std::cout << "Triggered checkpoint " << m_CurrentCheckPoint << "\n";
 			}
 		}
 	}
@@ -140,13 +138,13 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 	switch (e.keysym.sym)
 	{
 	case SDLK_f:
-		m_Player.ShadowFlip();
+		if(m_Player.GetLives() >= 0) m_Player.ShadowFlip();
 		break;
 	case SDLK_d:
-		m_Player.Dash();
+		if (m_Player.GetLives() >= 0) m_Player.Dash();
 		break;
 	case SDLK_r:
-		m_Player.Respawn(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
+		if (m_Player.GetLives() >= 0) m_Player.Respawn(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
 		break;
 	case SDLK_MINUS:
 		if (not m_UsingCheats) std::cout << "Enabled cheats\n";
@@ -185,7 +183,9 @@ void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 			m_Player.SetPosition(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
 		}
 		break;
-
+	case SDLK_RETURN:
+		if (m_Player.GetLives() < 0) ResetLevel();
+		break;
 	default:
 		break;
 	}
@@ -348,6 +348,24 @@ void Game::CreateLevel()
 
 }
 
+void Game::ResetLevel()
+{
+	std::cout << "Restart";
+
+	m_CurrentCheckPoint = 0;
+	for (Checkpoint& cp : m_CheckPoints)
+	{
+		cp.Reset();
+	}
+	for (Hint& hint : m_Hints)
+	{
+		hint.Reset();
+	}
+
+	m_Player.Reset(m_CheckPoints[m_CurrentCheckPoint].GetRespawnPosition());
+	
+}
+
 void Game::DrawLevel() const
 {
 	const Color4f baseLevelColor{0.4f, 0.85f, 0.33f, 1.f};
@@ -420,7 +438,24 @@ void Game::DrawUI(const Vector2f& windowBottomLeft) const
 	utils::SetColor(Color4f(0.f, 0.f, 0.f, 1.f));
 	utils::DrawRect(drawPos, METER_WIDTH, METER_HEIGHT, 6.f);
 
+	//Draw Game over screen if dead
+	
+	if (m_Player.GetLives() < 0)
+	{
+		Rectf window{ windowBottomLeft.x, windowBottomLeft.y, GetViewPort().width, GetViewPort().height};
+		utils::SetColor(Color4f(0.f, 0.f, 0.f, 0.6f));
+		utils::FillRect(window);
 
+		Texture gameOver{ "GAME OVER", "DeterminationMono.ttf", 100, Color4f(1.f, 1.f, 1.f, 1.f) };
+		drawPos.x = windowBottomLeft.x + (GetViewPort().width - gameOver.GetWidth()) / 2.f;
+		drawPos.y = windowBottomLeft.y + GetViewPort().height / 2.f;
+		gameOver.Draw(drawPos);
+
+		Texture retry{ "Press ENTER to retry", "DeterminationMono.ttf", 50, Color4f(1.f, 1.f, 1.f,1.f) };
+		drawPos.x += (gameOver.GetWidth() - retry.GetWidth()) / 2.f;
+		drawPos.y -= gameOver.GetHeight() / 2.f + retry.GetHeight();
+		retry.Draw(drawPos);
+	}
 }
 
 

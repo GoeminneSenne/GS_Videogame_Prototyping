@@ -24,6 +24,11 @@ void Hint::Activate()
 	m_IsActive = true;
 }
 
+void Hint::Reset()
+{
+	m_IsActive = false;
+}
+
 const Rectf& Hint::GetTriggerBounds() const
 {
 	return m_TriggerBounds;

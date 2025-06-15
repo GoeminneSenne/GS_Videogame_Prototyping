@@ -8,6 +8,7 @@ public:
 	void Draw() const;
 
 	void Activate();
+	void Reset();
 	const Rectf& GetTriggerBounds() const;
 private:
 	Texture* m_pTexture;

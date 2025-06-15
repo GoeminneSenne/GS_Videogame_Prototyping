@@ -11,6 +11,7 @@ public:
 	const Rectf& GetTriggerBounds() const;
 	bool IsTriggered() const;
 	void Trigger();
+	void Reset();
 
 private:
 	const Vector2f m_RespawnPosition;
