@@ -211,6 +211,8 @@ void Game::CreateLevel()
 {
 	SVGParser::GetVerticesFromSvgFile("level.svg", m_SharedVertices);
 	CalculateLevelBounds();
+
+	m_ShadowArea = Rectf(1780.f, 1202.f, 190.f, 5.f);
 }
 
 void Game::DrawLevel() const
