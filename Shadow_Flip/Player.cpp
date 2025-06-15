@@ -18,6 +18,7 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_IsInShadowArea{false}
 	, m_CurrentShadowBounds{}
 	, m_GlideTimer{0.f}
+	, m_IsUsingLens{false}
 {
 }
 
@@ -37,7 +38,7 @@ void Player::Draw() const
 	utils::FillRect(m_Bounds);
 }
 
-void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<Rectf>& shadowAreas)
+void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<std::vector<Vector2f>>& specificVertices, const std::vector<Rectf>& shadowAreas)
 {
 	//Variables
 	const float GRAVITY{ -2000.f };
@@ -54,6 +55,8 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 
 
 	//Handle input
+	m_IsUsingLens = pStates[SDL_SCANCODE_V];
+
 	if (pStates[SDL_SCANCODE_LEFT])
 	{
 		m_Velocity.x -= MOVE_SPEED;
@@ -126,19 +129,22 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 		}
 	}
 
-	//Adjust velocity in certain cases:
-	if (m_IsInShadowArea) m_Velocity.y = 0.f;
-	if (m_Velocity.y > JUMP_POWER * 0.75f && not m_CanDoubleJump) m_Velocity.x /= 2.2f;
-
-	//Move character
-	Move(m_Velocity * elapsedSec, levelVertices);
-	if (m_IsGrounded or m_HitCeiling)
+	if (not m_IsUsingLens)
 	{
-		m_Velocity.y = 0.f;
-	
-		m_GlideTimer = 0.f;
-	}
 
+		//Adjust velocity in certain cases:
+		if (m_IsInShadowArea) m_Velocity.y = 0.f;
+		if (m_Velocity.y > JUMP_POWER * 0.75f && not m_CanDoubleJump) m_Velocity.x /= 2.2f;
+
+		//Move character
+		Move(m_Velocity * elapsedSec, levelVertices, specificVertices);
+		if (m_IsGrounded or m_HitCeiling)
+		{
+			m_Velocity.y = 0.f;
+
+			m_GlideTimer = 0.f;
+		}
+	}
 
 	if (not m_IsInShadowArea && pStates[SDL_SCANCODE_DOWN] && not m_IsLight)
 	{
@@ -146,7 +152,6 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 		{
 			if (utils::IsOverlapping(area, m_Bounds))
 			{
-				std::cout << "Entered shadow\n";
 				m_IsInShadowArea = true;
 				m_CurrentShadowBounds = area;
 
@@ -163,7 +168,6 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 		m_Bounds.height = m_Height;
 		if (not IsShadowUnderWall(levelVertices))
 		{
-			std::cout << "Exited Shadow\n";
 			m_IsInShadowArea = false;
 			m_CurrentShadowBounds = Rectf();
 		}
@@ -174,15 +178,27 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 	}
 }
 
-void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& levelVertices)
+void Player::Move(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<std::vector<Vector2f>>& specificVertices)
 {
 	m_Bounds.left += deltaMovement.x;
 	m_Bounds.bottom += deltaMovement.y;
 	
 	if (not m_IsInShadowArea)
 	{
-		if(deltaMovement.y != 0.f)  CheckVerticalCollision(deltaMovement, levelVertices);
-		if(deltaMovement.x != 0.f)	CheckWallCollision(deltaMovement, levelVertices);
+		if (deltaMovement.y != 0.f)
+		{
+			m_IsGrounded = false;
+			m_HitCeiling = false;
+
+			CheckVerticalCollision(deltaMovement, levelVertices);
+			CheckVerticalCollision(deltaMovement, specificVertices);
+		}
+		if (deltaMovement.x != 0.f)
+		{
+			CheckWallCollision(deltaMovement, levelVertices);
+			CheckWallCollision(deltaMovement, specificVertices);
+		}
+
 	}
 	else
 	{
@@ -219,6 +235,11 @@ void Player::SetPosition(const Vector2f& pos)
 bool Player::IsLight() const
 {
 	return m_IsLight;
+}
+
+bool Player::IsUsingLens() const
+{
+	return m_IsUsingLens;
 }
 
 void Player::ShadowFlip()
@@ -259,8 +280,6 @@ void Player::CheckVerticalCollision(const Vector2f& deltaMovement, const std::ve
 {
 	//if (deltaMovement.y != 0.f)
 	{
-		m_IsGrounded = false;
-		m_HitCeiling = false;
 
 		utils::HitInfo hitInfo;
 		Vector2f leftRayStart{ m_Bounds.left + 1.f, m_Bounds.bottom - 1.f };

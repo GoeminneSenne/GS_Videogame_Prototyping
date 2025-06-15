@@ -7,13 +7,14 @@ public:
 	Player(float x, float y, float width, float height);
 
 	void Draw() const;
-	void Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<Rectf>& shadowAreas);
-	void Move(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& levelVertices);
+	void Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<std::vector<Vector2f>>& specificVertices, const std::vector<Rectf>& shadowAreas);
+	void Move(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& levelVertices, const std::vector<std::vector<Vector2f>>& specificVertices);
 	void Dash();
 
 	Vector2f GetPosition() const;
 	void SetPosition(const Vector2f& pos);
 	bool IsLight() const;
+	bool IsUsingLens() const;
 	void ShadowFlip();
 	
 private:
@@ -35,6 +36,8 @@ private:
 	
 	bool m_IsInShadowArea;
 	Rectf m_CurrentShadowBounds;
+
+	bool m_IsUsingLens;
 
 	void CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices);
 	void CheckVerticalCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices);

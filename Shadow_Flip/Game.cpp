@@ -31,19 +31,18 @@ void Game::Cleanup( )
 
 void Game::Update( float elapsedSec )
 {
-	std::vector<std::vector<Vector2f>> activeVertices{m_SharedVertices};
 	if (m_Player.IsLight())
 	{
-		activeVertices.reserve(activeVertices.size() + m_LightVertices.size());
-		activeVertices.insert(activeVertices.end(), m_LightVertices.begin(), m_LightVertices.end());
+		m_Player.Update(elapsedSec, m_SharedVertices, m_LightVertices, m_ShadowAreas);
 	}
 	else
 	{
-		activeVertices.reserve(activeVertices.size() + m_DarkVertices.size());
-		activeVertices.insert(activeVertices.end(), m_DarkVertices.begin(), m_DarkVertices.end());
+		m_Player.Update(elapsedSec, m_SharedVertices, m_DarkVertices, m_ShadowAreas);
 	}
 
-	m_Player.Update(elapsedSec, activeVertices, m_ShadowAreas);
+
+
+	//m_Player.Update(elapsedSec, activeVertices, m_ShadowAreas);
 
 	if (m_Player.GetPosition().y < 0.f)
 	{
@@ -205,7 +204,9 @@ void Game::CreateTestLevel()
 
 void Game::CreateLevel()
 {
-	SVGParser::GetVerticesFromSvgFile("level.svg", m_SharedVertices);
+	SVGParser::GetVerticesFromSvgFile("level_shared.svg", m_SharedVertices);
+	SVGParser::GetVerticesFromSvgFile("level_light.svg", m_LightVertices);
+	SVGParser::GetVerticesFromSvgFile("level_dark.svg", m_DarkVertices);
 	CalculateLevelBounds();
 
 	m_ShadowAreas.push_back(Rectf(1780.f, 1202.f, 190.f, 5.f));
@@ -225,9 +226,10 @@ void Game::DrawLevel() const
 	{
 		utils::SetColor(baseLevelColor);
 		utils::DrawPolygon(m_SharedVertices[platformIdx], true, 2.f);
+		//utils::FillPolygon(m_SharedVertices[platformIdx]);
 	}
 
-	if (m_Player.IsLight())
+	if (m_Player.IsLight() || m_Player.IsUsingLens())
 	{
 		for (int platformIdx{ 0 }; platformIdx < m_LightVertices.size(); ++platformIdx)
 		{
@@ -235,7 +237,8 @@ void Game::DrawLevel() const
 			utils::DrawPolygon(m_LightVertices[platformIdx]);
 		}
 	}
-	else
+	
+	if(not m_Player.IsLight() ||  m_Player.IsUsingLens())
 	{
 		for (int platformIdx{ 0 }; platformIdx < m_DarkVertices.size(); ++platformIdx)
 		{
