@@ -84,8 +84,10 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 			m_Velocity.y += JUMP_POWER * 0.75f; //2e jump is minder hoog
 			m_CanDoubleJump = false;
 		}
-		else if (m_Velocity.y <= 0.f)
+		else if (m_Velocity.y <= 0.f && m_IsLight)
 		{
+			//Gliding
+
 			const float GLIDE_MAX_TIME{ 0.7f };
 			if (m_GlideTimer <= GLIDE_MAX_TIME)
 			{
