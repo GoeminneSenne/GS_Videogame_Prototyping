@@ -9,7 +9,7 @@ Camera::Camera(float screenWidth, float screenHeight)
 {
 }
 
-void Camera::Aim(float levelW, float levelH, Vector2f trackCenter) const
+Vector2f Camera::Aim(float levelW, float levelH, Vector2f trackCenter) const
 {
 	Vector2f bottomLeft{ trackCenter.x - m_ScreenWidth / 2.f, trackCenter.y - m_ScreenHeight / 2.f };
 	if (bottomLeft.x < 0.f)
@@ -33,6 +33,7 @@ void Camera::Aim(float levelW, float levelH, Vector2f trackCenter) const
 	// transform modelview matrix to inverse camera transform!!
 	glTranslatef(-bottomLeft.x, -bottomLeft.y, 0.f); //zie slides (viewspace.pdf)
 
+	return bottomLeft;
 }
 
 void Camera::Reset() const

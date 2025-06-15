@@ -3,7 +3,7 @@ class Camera
 {
 public:
 	Camera(float screenWidth, float screenHeight);
-	void Aim(float levelW, float levelH, Vector2f trackCenter) const;
+	Vector2f Aim(float levelW, float levelH, Vector2f trackCenter) const;
 	void Reset() const;
 
 private:

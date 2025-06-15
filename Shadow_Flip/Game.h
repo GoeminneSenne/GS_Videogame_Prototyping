@@ -35,6 +35,7 @@ private:
 	void CreateLevel();
 
 	void DrawLevel() const;
+	void DrawLensMeter(const Vector2f& windowBottomLeft) const;
 
 	void CalculateLevelBounds();
 	void CalculateVectorBounds(std::vector<std::vector<Vector2f>> vertices);

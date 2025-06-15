@@ -16,6 +16,8 @@ public:
 	bool IsLight() const;
 	bool IsUsingLens() const;
 	void ShadowFlip();
+	float GetLensTime() const;
+	float GetLensMax() const;
 	
 private:
 	Rectf m_Bounds;
@@ -38,6 +40,8 @@ private:
 	Rectf m_CurrentShadowBounds;
 
 	bool m_IsUsingLens;
+	const float m_LensTimerMax;
+	float m_LensTimer;
 
 	void CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices);
 	void CheckVerticalCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices);

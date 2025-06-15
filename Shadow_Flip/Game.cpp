@@ -6,8 +6,8 @@
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
-	//, m_Player{100.f, 100.f, 40.f, 40.f}
-	, m_Player{4020.f, 2540.f, 40.f, 40.f}
+	, m_Player{100.f, 100.f, 40.f, 40.f}
+	//, m_Player{4020.f, 2540.f, 40.f, 40.f}
 	, m_Camera{GetViewPort().width, GetViewPort().height}
 	, m_StartingPosition{100.f, 100.f}
 	, m_LevelBounds{0,0,0,0}
@@ -54,11 +54,12 @@ void Game::Draw( ) const
 {
 	ClearBackground();
 
-	m_Camera.Aim(m_LevelBounds.width, m_LevelBounds.height, m_Player.GetPosition());
+	Vector2f windowBottomLeft = m_Camera.Aim(m_LevelBounds.width, m_LevelBounds.height, m_Player.GetPosition());
 	DrawLevel();
 	utils::SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
 	
 	m_Player.Draw();	
+	DrawLensMeter(windowBottomLeft);
 
 	m_Camera.Reset();
 }
@@ -253,6 +254,25 @@ void Game::DrawLevel() const
 		utils::FillRect(shadowArea);
 	}
 }
+
+void Game::DrawLensMeter(const Vector2f& windowBottomLeft) const
+{
+	const float BORDER_MARGIN{ 10.f };
+	const float METER_WIDTH{ 200.f }, METER_HEIGHT{ 30.f };
+	const Color4f meterColor{ 0.f, 0.f, 0.7f, 1.f };
+
+	Vector2f drawPos{ windowBottomLeft };
+	drawPos.x += BORDER_MARGIN;
+	drawPos.y += GetViewPort().height - METER_HEIGHT - BORDER_MARGIN;
+
+	float currentWidth{ m_Player.GetLensTime() / m_Player.GetLensMax() };
+
+	utils::SetColor(meterColor);
+	utils::FillRect(drawPos, METER_WIDTH * currentWidth, METER_HEIGHT);
+	utils::SetColor(Color4f(0.f, 0.f, 0.f, 1.f));
+	utils::DrawRect(drawPos, METER_WIDTH, METER_HEIGHT, 6.f);
+}
+
 
 void Game::CalculateLevelBounds()
 {

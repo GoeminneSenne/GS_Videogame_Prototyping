@@ -19,6 +19,8 @@ Player::Player(Vector2f pos, float width, float height)
 	, m_CurrentShadowBounds{}
 	, m_GlideTimer{0.f}
 	, m_IsUsingLens{false}
+	, m_LensTimerMax{5.f}
+	, m_LensTimer{5.f}
 {
 }
 
@@ -55,7 +57,7 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 
 
 	//Handle input
-	m_IsUsingLens = pStates[SDL_SCANCODE_V];
+	m_IsUsingLens = pStates[SDL_SCANCODE_V] && m_LensTimer > 0.f && m_IsGrounded;
 
 	if (pStates[SDL_SCANCODE_LEFT])
 	{
@@ -129,7 +131,7 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 		}
 	}
 
-	if (not m_IsUsingLens)
+	if (not m_IsUsingLens) //Player can't move while lens is active
 	{
 
 		//Adjust velocity in certain cases:
@@ -143,6 +145,15 @@ void Player::Update(float elapsedSec, const std::vector<std::vector<Vector2f>>& 
 			m_Velocity.y = 0.f;
 
 			m_GlideTimer = 0.f;
+		}
+	}
+	else
+	{
+		m_Velocity.y = 0.f;
+		m_LensTimer -= elapsedSec;
+		if (m_LensTimer < 0.f)
+		{
+			m_LensTimer = 0.f;
 		}
 	}
 
@@ -247,6 +258,16 @@ void Player::ShadowFlip()
 	if (m_IsInShadowArea) return;
 
 	m_IsLight = not m_IsLight;
+}
+
+float Player::GetLensTime() const
+{
+	return m_LensTimer;
+}
+
+float Player::GetLensMax() const
+{
+	return m_LensTimerMax;
 }
 
 void Player::CheckWallCollision(const Vector2f& deltaMovement, const std::vector<std::vector<Vector2f>>& vertices)
